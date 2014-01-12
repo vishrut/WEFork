@@ -113,6 +113,7 @@ void Player::Run()
 
 	last_time = time;
 
+    //Look here
 	PlayMode mpCurrentPlayMode = mpAgent->World().GetPlayMode();
 	PlayerState mpCurrentPlayerState = mpAgent->GetSelf();
 	PositionInfo mpCurrentPositionInfo = mpAgent->Info().GetPositionInfo();
@@ -198,9 +199,37 @@ void Player::Run()
     	if(mpCurrentPlayerState.IsKickable()){
     		std::cout<<"Ball kickable - "<<mpAgent->GetSelfUnum()<<std::endl;
     		Unum mpClosestPlayer = mpCurrentPositionInfo.GetClosestTeammateToPlayer(mpAgent->GetSelfUnum());
-    		std::cout<<"Closest player - "<<mpClosestPlayer<<std::endl;
+    		
+            /*
+            if(mpAgent->GetSelfUnum()==1)
+                mpClosestPlayer=3;
+            elseif(mpAgent->GetSelfUnum()==3)
+                mpClosestPlayer=4;
+            elseif(mpAgent->GetSelfUnum()==4)
+                mpClosestPlayer=8;
+            elseif(mpAgent->GetSelfUnum()==8)
+                mpClosestPlayer=10;
+            elseif(mpAgent->GetSelfUnum()==10)
+                mpClosestPlayer=7;
+            elseif(mpAgent->GetSelfUnum()==7)
+                mpClosestPlayer=4;
+            elseif(mpAgent->GetSelfUnum()==2)
+                mpClosestPlayer=4;
+            elseif(mpAgent->GetSelfUnum()==5)
+                mpClosestPlayer=4;
+            elseif(mpAgent->GetSelfUnum()==6)
+                mpClosestPlayer=8;
+            elseif(mpAgent->GetSelfUnum()==9)
+                mpClosestPlayer=7;
+            elseif(mpAgent->GetSelfUnum()==11)
+                mpClosestPlayer=8;
+            */              
+
+
+
+            std::cout<<"Closest player - "<<mpClosestPlayer<<std::endl;
             Vector a = mpAgent->GetWorldState().GetTeammate(mpClosestPlayer).GetPos();
-            std::cout<<"Current player pos - "<< a <<std::endl;
+            std::cout<<"Target player pos - "<< a <<std::endl;
             Vector b = mpAgent->GetSelf().GetPos();
             double playerangle = mpAgent->GetSelf().GetBodyDir();
             std::cout<<"My pos - "<< b <<std::endl;
@@ -231,15 +260,16 @@ void Player::Run()
     		//std::cout<<"Angle to closest player - "<<mpObserver->Teammate(mpClosestPlayer).Dir()<<std::endl;
     		//mpAgent->Turn(Kickanglez);
     		//std::cout<<"Angle to closest player - "<<mpObserver->Teammate(mpClosestPlayer).Dir()<<std::endl;
-    		std::cout <<"--------------------------------------------------------"<<std::endl;
     		//mpAgent->Kick(100, Kickanglez);
-            Kicker::instance().KickBall(*mpAgent, a, 100, KM_Hard, 0, false);
-    		std::cout <<"Should have kicked"<<std::endl;
+            if(Kicker::instance().KickBall(*mpAgent, a, ServerParam::instance().ballSpeedMax()/2, KM_Hard, 0, false))
+                std::cout <<"Should have kicked"<<std::endl;
+            std::cout <<"--------------------------------------------------------"<<std::endl;
+            
     	}
-        else if(mydis<5){
+        else if(mydis<2){
             std::cout<<"Ball near - "<<mpAgent->GetSelfUnum()<<std::endl;
             //AtomicAction act;
-            Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.7, 75, true, false);
+            Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.7, 100, true, false);
                 //std::cout<<"Dashed successfully - "<<mpAgent->GetSelfUnum()<<std::endl;
         }
     	/*

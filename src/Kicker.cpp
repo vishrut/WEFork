@@ -356,6 +356,7 @@ bool Kicker::KickBall(Agent & agent, const Vector & target, double speed_out, in
  */
 bool Kicker::KickBall(Agent & agent, double angle, double speed_out, KickMode mode, int *cycle_left, bool is_shoot)
 {
+	std::cout<<"Inside KickBall angle function" <<std::endl;
 	Vector target = agent.GetWorldState().GetBall().GetPos() + Polar2Vector(1000.0, angle);
 	return KickBall(agent, target, speed_out, mode, cycle_left, is_shoot);
 }
@@ -374,6 +375,8 @@ bool Kicker::KickBall(Agent & agent, double angle, double speed_out, KickMode mo
  */
 bool Kicker::KickBall(Agent & agent, const Vector & target, double speed_out, KickMode mode, int * cycle_left, bool is_shoot)
 {
+	std::cout<<"Inside KickBall vector function" <<std::endl;
+	
 	UpdateKickData(agent);
 
 	double speed_buf = 0.0;
