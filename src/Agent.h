@@ -320,6 +320,7 @@ private:
 
     void SaveActiveBehaviorList(const std::list<ActiveBehavior> & behavior_list);
 
+public: //hereo, remove public
     /**
      * 设置本周期实际执行的activebehavior -- excute时设置
      * @param type

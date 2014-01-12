@@ -209,7 +209,7 @@ public:
 
 	Strategy & mStrategy;
 
-    Formation & mFormation;
+    //Formation & mFormation; //hereo
 };
 
 class BehaviorDefenseData: public BehaviorAttackData {

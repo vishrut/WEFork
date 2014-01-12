@@ -72,6 +72,7 @@ BehaviorPassExecuter::~BehaviorPassExecuter(void)
 
 bool BehaviorPassExecuter::Execute(const ActiveBehavior & pass)
 {
+	std::cout<<"Inside pass execute"<<std::endl;
 	Logger::instance().LogPass(false, mBallState.GetPos(), pass.mTarget, "@Pass", true);
 	if (pass.mDetailType == BDT_Pass_Direct)
 		return Kicker::instance().KickBall(mAgent, pass.mTarget, pass.mKickSpeed, KM_Quick);
@@ -97,6 +98,8 @@ BehaviorPassPlanner::~BehaviorPassPlanner(void)
 
 void BehaviorPassPlanner::Plan(std::list<ActiveBehavior> & behavior_list)
 {
+
+	std::cout<<"Inside pass plan"<<std::endl;
 	if (!mSelfState.IsKickable()) return;
 
 	const std::vector<Unum> & tm2ball = mPositionInfo.GetCloseTeammateToTeammate(mSelfState.GetUnum());

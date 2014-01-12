@@ -46,6 +46,7 @@
 #include "TimeTest.h"
 #include "Dasher.h"
 #include "Kicker.h"
+#include "Tackler.h" 
 
 Player::Player()//:
 	//mpDecisionTree( new DecisionTree ) //hereo
@@ -84,6 +85,8 @@ void Player::SendOptionToServer()
 	std::cout << "SendOptionToServer returning"<<std::endl;
 }
 
+
+
 void Player::Run()
 {
     //TIMETEST("Run");
@@ -117,8 +120,8 @@ void Player::Run()
 	PlayMode mpCurrentPlayMode = mpAgent->World().GetPlayMode();
 	PlayerState mpCurrentPlayerState = mpAgent->GetSelf();
 	PositionInfo mpCurrentPositionInfo = mpAgent->Info().GetPositionInfo();
-    //Vector mypos = mpAgent->GetSelf().GetPos();
-    double mydis = mpCurrentPositionInfo.GetBallDistToPlayer(mpAgent->GetSelfUnum());
+    Vector myPosition = mpAgent->GetSelf().GetPos();
+    double myDisToBall = mpCurrentPositionInfo.GetBallDistToPlayer(mpAgent->GetSelfUnum());
     Vector ballpos = mpAgent->GetWorldState().GetBall().GetPos();
 	//std::cout << "PlayMode - " << mpCurrentPlayMode <<std::endl;
 
@@ -195,91 +198,63 @@ void Player::Run()
     	}
     }
     else {
-    	//std::cout<<"Our kick off - "<<mpAgent->GetSelfUnum()<<std::endl;
     	if(mpCurrentPlayerState.IsKickable()){
-    		std::cout<<"Ball kickable - "<<mpAgent->GetSelfUnum()<<std::endl;
-    		Unum mpClosestPlayer = mpCurrentPositionInfo.GetClosestTeammateToPlayer(mpAgent->GetSelfUnum());
-    		
+            //if suitable holes have players available, pass
+            //else, hold on to ball
+
+            Vector nearestHole = RoundToNearestHole(myPosition);
+            if(PassPlayersAvailable()){
+                std::cout<<"Pass players available"<<std::endl;
+                PassToBestPlayer();
+            }
+            else{
+                ActiveBehavior beh = ActiveBehavior(*mpAgent, BT_Hold);
+
+                if (beh.GetType() != BT_None) {
+                    std::cout<<"Behavior recvd"<<std::endl;
+                    mpAgent->SetActiveBehaviorInAct(beh.GetType());
+                    if(beh.Execute())
+                        std::cout<<"Behavior executed"<<std::endl;
+                }
+            }
+
             /*
-            if(mpAgent->GetSelfUnum()==1)
-                mpClosestPlayer=3;
-            elseif(mpAgent->GetSelfUnum()==3)
-                mpClosestPlayer=4;
-            elseif(mpAgent->GetSelfUnum()==4)
-                mpClosestPlayer=8;
-            elseif(mpAgent->GetSelfUnum()==8)
-                mpClosestPlayer=10;
-            elseif(mpAgent->GetSelfUnum()==10)
-                mpClosestPlayer=7;
-            elseif(mpAgent->GetSelfUnum()==7)
-                mpClosestPlayer=4;
-            elseif(mpAgent->GetSelfUnum()==2)
-                mpClosestPlayer=4;
-            elseif(mpAgent->GetSelfUnum()==5)
-                mpClosestPlayer=4;
-            elseif(mpAgent->GetSelfUnum()==6)
-                mpClosestPlayer=8;
-            elseif(mpAgent->GetSelfUnum()==9)
-                mpClosestPlayer=7;
-            elseif(mpAgent->GetSelfUnum()==11)
-                mpClosestPlayer=8;
-            */              
+            if(mpAgent->GetSelfUnum()!=10){
+                ActiveBehavior beh = ActiveBehavior(*mpAgent, BT_Hold);
 
-
-
-            std::cout<<"Closest player - "<<mpClosestPlayer<<std::endl;
-            Vector a = mpAgent->GetWorldState().GetTeammate(mpClosestPlayer).GetPos();
-            std::cout<<"Target player pos - "<< a <<std::endl;
-            Vector b = mpAgent->GetSelf().GetPos();
-            double playerangle = mpAgent->GetSelf().GetBodyDir();
-            std::cout<<"My pos - "<< b <<std::endl;
-            double abangle = (a-b).Dir();
-            std::cout<<"Target dir - "<< abangle <<std::endl;
-            double Kickanglez = abangle-playerangle;
-            if(Kickanglez>180)
-                Kickanglez = Kickanglez-360;
-            if(Kickanglez<-180)
-                Kickanglez = Kickanglez+360;
-            std::cout<<"Kickangle - "<< Kickanglez <<std::endl;
-            //body dir + kickangle = targetdir
-
-            //Vector a1 = mpAgent->GetWorldState().GetTeammate(9).GetPos();
-            //Vector c1 = mpAgent->GetWorldState().GetTeammate(11).GetPos();
+                if (beh.GetType() != BT_None) {
+                    std::cout<<"Behavior recvd"<<std::endl;
+                    mpAgent->SetActiveBehaviorInAct(beh.GetType());
+                    if(beh.Execute())
+                        std::cout<<"Behavior executed"<<std::endl;
+                }
+            }
             
-            //std::cout<<"player 9 pos - "<< a1 <<std::endl;
-            //Vector b1 = mpAgent->GetSelf().GetPos();
-            //double playerangle1 = mpAgent->GetSelf().GetBodyDir();
-            //std::cout<<"My pos - "<< b <<std::endl;
-            //double abangle1 = (a1-b).Dir();
-            //double abangle2 = (c1-b).Dir();
-            
-            //std::cout<<"topdir - "<< abangle1 <<std::endl;
-            //std::cout<<"downdir - "<< abangle2 <<std::endl;
-            std::cout<<"bodydir - "<< playerangle <<std::endl;
-            //double mpAngle = (mpAgent->GetWorldState().Teammate(mpClosestPlayer).GetPos()-mpAgent->GetSelf().GetPos()).Dir();
-    		//std::cout<<"Angle to closest player - "<<mpObserver->Teammate(mpClosestPlayer).Dir()<<std::endl;
-    		//mpAgent->Turn(Kickanglez);
-    		//std::cout<<"Angle to closest player - "<<mpObserver->Teammate(mpClosestPlayer).Dir()<<std::endl;
-    		//mpAgent->Kick(100, Kickanglez);
-            if(Kicker::instance().KickBall(*mpAgent, a, ServerParam::instance().ballSpeedMax()/2, KM_Hard, 0, false))
-                std::cout <<"Should have kicked"<<std::endl;
-            std::cout <<"--------------------------------------------------------"<<std::endl;
+            else{
+                RoundToNearestHole(myPosition);
+        		std::cout<<"Ball kickable - "<<mpAgent->GetSelfUnum()<<std::endl;
+        		Unum mpClosestPlayer = mpCurrentPositionInfo.GetClosestTeammateToPlayer(mpAgent->GetSelfUnum());          
+
+                std::cout<<"Closest player - "<<mpClosestPlayer<<std::endl;
+                Vector target_pos = mpAgent->GetWorldState().GetTeammate(mpClosestPlayer).GetPos();
+                std::cout<<"Target player pos - "<< target_pos <<std::endl;
+
+                if(Kicker::instance().KickBall(*mpAgent, target_pos, ServerParam::instance().ballSpeedMax()/2, KM_Hard, 0, false))
+                    std::cout <<"Kick successful"<<std::endl;
+            }
+            */
+            std::cout <<"--------------------------------------------------------"<<std::endl;   
             
     	}
-        else if(mydis<2){
-            std::cout<<"Ball near - "<<mpAgent->GetSelfUnum()<<std::endl;
-            //AtomicAction act;
-            Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.7, 100, true, false);
-                //std::cout<<"Dashed successfully - "<<mpAgent->GetSelfUnum()<<std::endl;
+        else if(myDisToBall<3){
+            //if ball is with a player
+                //if player has empty holes, dash to the hole
+                //else, do nothing
+            //else, do nothing
+            Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
         }
-    	/*
-    	if can kick ball
-    		kick to closest player
-    	*/
     }
     	
-    //std::cout << "Observer unum - " << mpAgent->GetSelfUnum() << std::endl;
-
 	//Formation::instance.UpdateOpponentRole(); //TODO: 暂时放在这里，教练未发来对手阵型信息时自己先计算 //Hereo
 
 	VisualSystem::instance().ResetVisualRequest();
@@ -291,6 +266,5 @@ void Player::Run()
     mpAgent->SetHistoryActiveBehaviors(); //Hereo
 
 	Logger::instance().LogSight();
-	//std::cout << "Player run called and unlocked and completed - " << mpAgent->GetSelfUnum() << std::endl;
-	
+	//std::cout << "Player run called and unlocked and completed - " << mpAgent->GetSelfUnum() << std::endl;	
 }

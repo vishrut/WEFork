@@ -45,27 +45,27 @@ BehaviorAttackData::BehaviorAttackData(Agent & agent):
 	mSelfState ( agent.Self() ),
 	mPositionInfo ( agent.Info().GetPositionInfo()),
 	mInterceptInfo ( agent.Info().GetInterceptInfo()),
-	mStrategy (agent.GetStrategy()),
-    mFormation ( agent.GetFormation() )
+	mStrategy (agent.GetStrategy())
+    //mFormation ( agent.GetFormation() ) //hereo
 {
-	mFormation.Update(Formation::Offensive, "Offensive");
+	//mFormation.Update(Formation::Offensive, "Offensive"); //hereo
 }
 
 BehaviorAttackData::~BehaviorAttackData()
 {
-	mFormation.Rollback("Offensive");
+	//mFormation.Rollback("Offensive"); //hereo
 }
 
 BehaviorDefenseData::BehaviorDefenseData(Agent & agent):
 	BehaviorAttackData (agent),
 	mAnalyser (agent.GetAnalyser())
 {
-	mFormation.Update(Formation::Defensive, "Defensive");
+	//mFormation.Update(Formation::Defensive, "Defensive"); //hereo
 }
 
 BehaviorDefenseData::~BehaviorDefenseData()
 {
-	mFormation.Rollback("Defensive");
+	//mFormation.Rollback("Defensive"); //hereo
 }
 
 bool ActiveBehavior::Execute()
@@ -73,6 +73,8 @@ bool ActiveBehavior::Execute()
 	BehaviorExecutable * behavior = BehaviorFactory::instance().CreateBehavior(GetAgent(), GetType());
 
 	if (behavior){
+		std::cout<<"Behavior recvd inside"<<std::endl;
+                
 		Logger::instance().GetTextLogger("executing") << GetAgent().GetWorldState().CurrentTime() << " " << BehaviorFactory::instance().GetBehaviorName(GetType()) << " executing" << std::endl;
 
 		behavior->SubmitVisualRequest(*this);

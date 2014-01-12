@@ -11,7 +11,7 @@ src/Player.d: ../src/Player.cpp ../src/Player.h ../src/Client.h \
  ../src/PositionInfo.h ../src/Strategy.h ../src/InterceptInfo.h \
  ../src/InterceptModel.h ../src/DecisionData.h ../src/Analyser.h \
  ../src/VisualSystem.h ../src/Logger.h ../src/TimeTest.h ../src/Dasher.h \
- ../src/Kicker.h
+ ../src/Kicker.h ../src/Tackler.h
 
 ../src/Player.h:
 
@@ -92,3 +92,5 @@ src/Player.d: ../src/Player.cpp ../src/Player.h ../src/Client.h \
 ../src/Dasher.h:
 
 ../src/Kicker.h:
+
+../src/Tackler.h:

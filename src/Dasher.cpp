@@ -49,7 +49,7 @@ Dasher::Dasher()
 	for (int i = 0; i < 8; ++i) {
 		DASH_DIR[i] = GetNormalizeAngleDeg(ServerParam::instance().dashAngleStep() * i);
 		DIR_RATE[i] = GetDashDirRate(DASH_DIR[i]);
-}
+	}
 
 	for (int i = 0; i < 8; ++i) {
 		ANTI_DIR_IDX[i] = GetDashDirIdx(DASH_DIR[i] + 180.0);
