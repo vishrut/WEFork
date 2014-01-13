@@ -81,15 +81,28 @@ public:
     	double buffer = 1;
     	
     	//TODO: Can be replaced by the IsOccupied function
-    	for(Unum i=1; i<=11; i++){
-    		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
-    		if( AreSamePoints(player_pos, frontup, buffer)||
-    		    AreSamePoints(player_pos, frontdown, buffer)||
-    			AreSamePoints(player_pos, backup, buffer)||
-    			AreSamePoints(player_pos, backdown, buffer)
-    			)
-    			return true;
-    	}
+    	if(mpAgent->GetSelfUnum()==100){
+	    	for(Unum i=1; i<=11; i++){
+	    		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+	    		if( AreSamePoints(player_pos, frontup, buffer)||
+	    		    AreSamePoints(player_pos, frontdown, buffer)||
+	    			AreSamePoints(player_pos, backup, buffer)||
+	    			AreSamePoints(player_pos, backdown, buffer)
+	    			)
+	    			return true;
+	    	}
+	    }
+	    else{
+	    	for(Unum i=1; i<=11; i++){
+	    		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+	    		if( AreSamePoints(player_pos, frontup, buffer)||
+	    		    AreSamePoints(player_pos, frontdown, buffer)
+	    			){
+	    			std::cout<<"frontpass available"<<std::endl;
+	    			return true;
+	    		}
+	    	}
+	    }
     	return false;	
     }
 
@@ -109,6 +122,8 @@ public:
     	double mindis = 999;
     	Unum mindisUnum = 99;
     	Unum BHUnum = GetBHUnum();
+    	if(BHUnum==-1)
+    		std::cout<<"No ball holder"<<std::endl;
     	for(Unum i=1; i<=11; i++){
     		double PlayerDis = mpAgent->GetWorldState().GetTeammate(i).GetPos().Dist(target);
     		if(PlayerDis<mindis&&i!=BHUnum){
@@ -116,6 +131,7 @@ public:
     			mindisUnum = i;
     		}
     	}
+    	std::cout<<"Player "<<mpAgent->GetSelfUnum()<<"thinks player "<<mindisUnum<<"is closest to hole"<<std::endl;
     	if(mpAgent->GetSelfUnum()==mindisUnum)
     		return true;
     	else 
@@ -143,7 +159,15 @@ public:
     	Vector BHfrontdown = Vector(BHPos.X()+10, BHPos.Y()+10);
     	Vector BHbackdown = Vector(BHPos.X()-10, BHPos.Y()+10);
     	//if frontup&frontdown not occupied (+ other conditions), move there
-    	if(!IsOccupied(BHbackup)&&!IsOccupied(BHbackdown)){
+    	if(!IsOccupied(BHfrontup)&&!IsOccupied(BHfrontdown)){
+    		//&&mpAgent->GetSelfUnum()!=10
+    		//if closest to frontup/frontdown, occupy it
+    		if(IsClosest(BHfrontup))
+    			OccupyHole(RoundToNearestHole(BHfrontup));
+    		else if(IsClosest(BHfrontdown))
+    			OccupyHole(RoundToNearestHole(BHfrontdown));
+    	}
+    	else if(!IsOccupied(BHbackup)&&!IsOccupied(BHbackdown)&&mpAgent->GetSelfUnum()==10){
     		//if closest to frontup/frontdown, occupy it
     		if(IsClosest(BHbackup))
     			OccupyHole(RoundToNearestHole(BHbackup));
@@ -155,8 +179,8 @@ public:
     bool BallKickableByATeammate(){
     	//TODO: Replace IsKickable with AreSamePoints + larger buffer
     	for(Unum i=1; i<=11; i++){
-    		if(mpAgent->GetWorldState().GetTeammate(i).IsKickable()){
-    			std::cout<<"Player "<<mpAgent->GetSelfUnum()<<" thinks ball kickable by Player "<<i<<std::endl;
+    		if(mpAgent->GetWorldState().GetTeammate(i).IsKickable()&&(i!=mpAgent->GetSelfUnum())){
+    			//std::cout<<"Player "<<mpAgent->GetSelfUnum()<<" thinks ball kickable by Player "<<i<<std::endl;
     			return true;
     		}
     	}
@@ -223,7 +247,8 @@ public:
 
 	void OccupyHole(Vector target){
 	    //Dash to target
-	    Dasher::instance().GoToPoint(*mpAgent, target, 0.3, 100, true, false);
+	    //while(!AreSamePoints(mpAgent->GetSelf().GetPos(),target,2))
+		    Dasher::instance().GoToPoint(*mpAgent, target, 0.3, 100, true, false);
 	}
 
 	double abs(double d){

@@ -73,7 +73,7 @@ bool ActiveBehavior::Execute()
 	BehaviorExecutable * behavior = BehaviorFactory::instance().CreateBehavior(GetAgent(), GetType());
 
 	if (behavior){
-		std::cout<<"Behavior recvd inside"<<std::endl;
+		//std::cout<<"Behavior recvd inside"<<std::endl;
                 
 		Logger::instance().GetTextLogger("executing") << GetAgent().GetWorldState().CurrentTime() << " " << BehaviorFactory::instance().GetBehaviorName(GetType()) << " executing" << std::endl;
 

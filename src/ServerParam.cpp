@@ -179,7 +179,7 @@ const bool   ServerParam::PEN_COACH_MOVES_PLAYERS = true;
 const int ServerParam::FREEFORM_WAIT_PERIOD = 600;
 const int ServerParam::FREEFORM_SEND_PERIOD = 20;
 
-const bool ServerParam::FREE_KICK_FAULTS = true;
+const bool ServerParam::FREE_KICK_FAULTS = false; //hereo
 const bool ServerParam::BACK_PASSES = true;
 
 const bool ServerParam::PROPER_GOAL_KICKS = false;
@@ -334,9 +334,9 @@ void ServerParam::AddParams()
     AddParam( "hear_decay", & M_hear_decay, HEAR_DECAY );
     AddParam( "catch_ban_cycle", & M_catch_ban_cycle, GOALIE_CATCH_BAN_CYCLE );
     AddParam( "send_vi_step", & M_send_vi_step, SEND_VISUALINFO_INTERVAL_MSEC );
-    AddParam( "use_offside", & M_use_offside, true );
+    AddParam( "use_offside", & M_use_offside, false );//hereo
     AddParam( "offside_active_area_size", & M_offside_active_area_size, OFFSIDE_ACTIVE_AREA_SIZE );
-    AddParam( "forbid_kick_off_offside", & M_forbid_kick_off_offside, true );
+    AddParam( "forbid_kick_off_offside", & M_forbid_kick_off_offside, false );//hereo
     AddParam( "verbose", & M_verbose, false );
     AddParam( "offside_kick_margin", & M_offside_kick_margin, OFFSIDE_KICK_MARGIN );
     AddParam( "slow_down_factor", & M_slow_down_factor, 1 );

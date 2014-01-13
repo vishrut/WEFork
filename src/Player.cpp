@@ -125,103 +125,98 @@ void Player::Run()
 
     if(mpCurrentPlayMode==PM_Before_Kick_Off){
     	//TODO: Replace with an array + loop
+        std::cout<<PlayerParam::instance().teamName()<<std::endl;
         if(!isPositioned){
-    		std::cout << "Not yet positioned" << std::endl;
     		if(mpAgent->GetSelfUnum() == 1){
     			Vector player_pos = Vector(-40.0, 0.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 2){
     			Vector player_pos = Vector(-20.0, -20.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 3){
     			Vector player_pos = Vector(-30.0, -10.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 4){
     			Vector player_pos = Vector(-20.0, 0.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 5){
     			Vector player_pos = Vector(-30.0, 10.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 6){
     			Vector player_pos = Vector(-20.0, 20.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 7){
     			Vector player_pos = Vector(-15.0, -15.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 8){
     			Vector player_pos = Vector(-15.0, 15.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 9){
     			Vector player_pos = Vector(0.0, -20.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 10){
     			Vector player_pos = Vector(0.0, 1.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 11){
     			Vector player_pos = Vector(0.0, 20.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    			std::cout << "Positioned" << std::endl;
     		}
     	}
+        std::cout << "Positioned" << std::endl;
     }
     else {
-    	if(mpCurrentPlayerState.IsKickable()){
+        if(mpCurrentPlayerState.IsKickable()&&!BallKickableByATeammate()){
             //if suitable holes have players available, pass
             //else, hold on to ball
             Vector nearestHole = RoundToNearestHole(myPosition);
             if(PassPlayersAvailable()){
+                std::cout <<"------------------------------------------------------"<<std::endl;
                 PassToBestPlayer();
             }
             else{
                 ActiveBehavior beh = ActiveBehavior(*mpAgent, BT_Hold);
                 if (beh.GetType() != BT_None) {
                     mpAgent->SetActiveBehaviorInAct(beh.GetType());
-                    if(beh.Execute())
-                        std::cout<<"Holding ball"<<std::endl;
+                    if(beh.Execute());
+                        //std::cout<<"Holding ball."<<std::endl;
                 }
             }
-            std::cout <<"--------------------------------------------------------"<<std::endl;   
+               
     	}
-        else if(myDisToBall<=2){
+        /*
+        else if(myDisToBall<=1){
             Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
         }
-        else if(myDisToBall>2){
+        */
+        else {
+            //if(myDisToBall>1)
             if(BallKickableByATeammate()){
+                std::cout<<"will decide and occupy hole - "<<mpAgent->GetSelfUnum()<<std::endl;
                 DecideAndOccupyHole();
             }
-            else if(mpAgent->GetSelfUnum()==10)
-                Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
+            else if(mpAgent->GetSelfUnum()==10);
+                //Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
             //if ball is with a player
                 //if player has empty holes, dash to the hole
                 //else, do nothing
