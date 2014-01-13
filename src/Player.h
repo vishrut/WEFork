@@ -62,7 +62,9 @@ public:
     /**
      * 构造函数和析构函数
      */
-    bool isPositioned; 
+    bool isPositioned;
+    bool mpIntransit = false;
+    Vector mpTarget = Vector(0,0); 
 
     Player();
     virtual ~Player();
@@ -118,7 +120,7 @@ public:
     }
 
     bool IsClosest(Vector target){
-    	//Exclude ballholder from the below equation
+    	//Excluded ballholder from the below equation
     	double mindis = 999;
     	Unum mindisUnum = 99;
     	Unum BHUnum = GetBHUnum();
@@ -159,6 +161,7 @@ public:
     	Vector BHfrontdown = Vector(BHPos.X()+10, BHPos.Y()+10);
     	Vector BHbackdown = Vector(BHPos.X()-10, BHPos.Y()+10);
     	//if frontup&frontdown not occupied (+ other conditions), move there
+    	//TODO: Currently, it is possible that one player is expected to fill both the holes
     	if(!IsOccupied(BHfrontup)&&!IsOccupied(BHfrontdown)){
     		//&&mpAgent->GetSelfUnum()!=10
     		//if closest to frontup/frontdown, occupy it
@@ -197,6 +200,7 @@ public:
     }
 
     void PassToBestPlayer(){
+    	//TODO: Use transit variable for faster calling of the OccupyHole/Dasher functions
     	Vector myPosition = mpAgent->GetSelf().GetPos();
     	Vector currentHole = RoundToNearestHole(myPosition);
     	Vector frontup = Vector(currentHole.X()+10, currentHole.Y()-10);
@@ -238,8 +242,7 @@ public:
 
 	bool AreSamePoints(Vector A, Vector B, double buffer){
 		//Check if and b are the same points +/- buffer
-		// TODO: Add conditions to handle tolerance
-    	if( (abs(A.X()-B.X())<buffer) && (abs(A.Y()-B.Y())<buffer))
+		if( (abs(A.X()-B.X())<buffer) && (abs(A.Y()-B.Y())<buffer))
     		return true;
     	else
     		return false;
@@ -248,7 +251,9 @@ public:
 	void OccupyHole(Vector target){
 	    //Dash to target
 	    //while(!AreSamePoints(mpAgent->GetSelf().GetPos(),target,2))
-		    Dasher::instance().GoToPoint(*mpAgent, target, 0.3, 100, true, false);
+		    //Dasher::instance().GoToPoint(*mpAgent, target, 0.3, 100, true, false);
+        mpIntransit = true;
+        mpTarget = target;
 	}
 
 	double abs(double d){

@@ -186,7 +186,19 @@ void Player::Run()
         std::cout << "Positioned" << std::endl;
     }
     else {
-        if(mpCurrentPlayerState.IsKickable()&&!BallKickableByATeammate()){
+        //TODO: Use transit variable for faster calling of the OccupyHole/Dasher functions
+        //TODO: Better dash function
+        //TODO: Look at buffer values
+        //TODO: Find why ball holding is competed by players
+        //TODO: Look at TODOs in the header file
+        if(mpIntransit){
+            if(!AreSamePoints(myPosition, mpTarget, 1))
+                Dasher::instance().GoToPoint(*mpAgent, mpTarget, 0.3, 100, true, false);
+            else
+                mpIntransit = false;
+        }
+        else if(mpCurrentPlayerState.IsKickable()){
+            //&&!BallKickableByATeammate()
             //if suitable holes have players available, pass
             //else, hold on to ball
             Vector nearestHole = RoundToNearestHole(myPosition);
@@ -204,18 +216,20 @@ void Player::Run()
             }
                
     	}
-        /*
-        else if(myDisToBall<=1){
-            Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
+               
+        else if(myDisToBall<=3){
+            //Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
+            mpIntransit = true;
+            mpTarget = ballpos;
         }
-        */
+
         else {
             //if(myDisToBall>1)
             if(BallKickableByATeammate()){
                 std::cout<<"will decide and occupy hole - "<<mpAgent->GetSelfUnum()<<std::endl;
                 DecideAndOccupyHole();
             }
-            else if(mpAgent->GetSelfUnum()==10);
+            //else if(mpAgent->GetSelfUnum()==10);
                 //Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
             //if ball is with a player
                 //if player has empty holes, dash to the hole
