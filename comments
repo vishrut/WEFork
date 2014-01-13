@@ -1,5 +1,30 @@
 comments
-    		
+            /*
+            if(mpAgent->GetSelfUnum()!=10){
+                ActiveBehavior beh = ActiveBehavior(*mpAgent, BT_Hold);
+
+                if (beh.GetType() != BT_None) {
+                    std::cout<<"Behavior recvd"<<std::endl;
+                    mpAgent->SetActiveBehaviorInAct(beh.GetType());
+                    if(beh.Execute())
+                        std::cout<<"Behavior executed"<<std::endl;
+                }
+            }
+            
+            else{
+                RoundToNearestHole(myPosition);
+                std::cout<<"Ball kickable - "<<mpAgent->GetSelfUnum()<<std::endl;
+                Unum mpClosestPlayer = mpCurrentPositionInfo.GetClosestTeammateToPlayer(mpAgent->GetSelfUnum());          
+
+                std::cout<<"Closest player - "<<mpClosestPlayer<<std::endl;
+                Vector target_pos = mpAgent->GetWorldState().GetTeammate(mpClosestPlayer).GetPos();
+                std::cout<<"Target player pos - "<< target_pos <<std::endl;
+
+                if(Kicker::instance().KickBall(*mpAgent, target_pos, ServerParam::instance().ballSpeedMax()/2, KM_Hard, 0, false))
+                    std::cout <<"Kick successful"<<std::endl;
+            }
+            */
+            
             /*
             if(mpAgent->GetSelfUnum()==1)
                 mpClosestPlayer=3;

@@ -78,17 +78,98 @@ public:
     	Vector frontdown = Vector(currentHole.X()+10, currentHole.Y()+10);
     	Vector backdown = Vector(currentHole.X()-10, currentHole.Y()+10);
     	
-    	double buffer = 3;
+    	double buffer = 1;
     	
+    	//TODO: Can be replaced by the IsOccupied function
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     		if( AreSamePoints(player_pos, frontup, buffer)||
     		    AreSamePoints(player_pos, frontdown, buffer)||
     			AreSamePoints(player_pos, backup, buffer)||
-    			AreSamePoints(player_pos, backdown, buffer))
+    			AreSamePoints(player_pos, backdown, buffer)
+    			)
     			return true;
     	}
     	return false;	
+    }
+
+    bool IsOccupied(Vector target){
+    	//Returns true if target is occupied by a player
+    	double buffer = 1;
+    	for(Unum i=1; i<=11; i++){
+    		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+    		if(AreSamePoints(player_pos, target, buffer))
+    			return true;
+    	}
+    	return false;
+    }
+
+    bool IsClosest(Vector target){
+    	//Exclude ballholder from the below equation
+    	double mindis = 999;
+    	Unum mindisUnum = 99;
+    	Unum BHUnum = GetBHUnum();
+    	for(Unum i=1; i<=11; i++){
+    		double PlayerDis = mpAgent->GetWorldState().GetTeammate(i).GetPos().Dist(target);
+    		if(PlayerDis<mindis&&i!=BHUnum){
+    			mindis = PlayerDis;
+    			mindisUnum = i;
+    		}
+    	}
+    	if(mpAgent->GetSelfUnum()==mindisUnum)
+    		return true;
+    	else 
+    		return false;
+    }
+
+    void DecideAndOccupyHole(){
+    	//Called when another teammate has the ball
+    	//Decide if the player should support the ballholder by moving to an appropriate hole or not
+    	//Act as per the decision
+    	
+    	Vector BHPos;
+    	
+    	double buffer = 1;
+    	for(Unum i=1; i<=11; i++){
+    		if(mpAgent->GetWorldState().GetTeammate(i).IsKickable()){
+    			BHPos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+    			break;
+    		}
+    	}
+    	BHPos = RoundToNearestHole(BHPos);
+
+    	Vector BHfrontup = Vector(BHPos.X()+10, BHPos.Y()-10);
+    	Vector BHbackup = Vector(BHPos.X()-10, BHPos.Y()-10);
+    	Vector BHfrontdown = Vector(BHPos.X()+10, BHPos.Y()+10);
+    	Vector BHbackdown = Vector(BHPos.X()-10, BHPos.Y()+10);
+    	//if frontup&frontdown not occupied (+ other conditions), move there
+    	if(!IsOccupied(BHbackup)&&!IsOccupied(BHbackdown)){
+    		//if closest to frontup/frontdown, occupy it
+    		if(IsClosest(BHbackup))
+    			OccupyHole(RoundToNearestHole(BHbackup));
+    		else if(IsClosest(BHbackdown))
+    			OccupyHole(RoundToNearestHole(BHbackdown));
+    	}
+    }
+
+    bool BallKickableByATeammate(){
+    	//TODO: Replace IsKickable with AreSamePoints + larger buffer
+    	for(Unum i=1; i<=11; i++){
+    		if(mpAgent->GetWorldState().GetTeammate(i).IsKickable()){
+    			std::cout<<"Player "<<mpAgent->GetSelfUnum()<<" thinks ball kickable by Player "<<i<<std::endl;
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+
+    Unum GetBHUnum(){
+    	//Only to be called if BallKickableByATeammate
+    	for(Unum i=1; i<=11; i++){
+    		if(mpAgent->GetWorldState().GetTeammate(i).IsKickable())
+    			return i;
+    	}
+    	return -1;
     }
 
     void PassToBestPlayer(){
@@ -99,7 +180,7 @@ public:
     	Vector frontdown = Vector(currentHole.X()+10, currentHole.Y()+10);
     	Vector backdown = Vector(currentHole.X()-10, currentHole.Y()+10);
     	
-    	double buffer = 3;
+    	double buffer = 1;
     	
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
@@ -164,7 +245,7 @@ public:
 	    int roundX = static_cast<int>((abs(P.X())+5.00)/10);
 	    int roundY = static_cast<int>((abs(P.Y())+5.00)/10);
 	    Vector roundedTens = Vector(multX*roundX, multY*roundY);
-	    std::cout<<"Rounded Tens - "<<roundedTens<<std::endl;
+	    //std::cout<<"Rounded Tens - "<<roundedTens<<std::endl;
 	    return roundedTens;
 	}
 
@@ -180,10 +261,10 @@ public:
 	}
 
 	Vector RoundToNearestHole(Vector P){
-	    std::cout<<"Rounding up point - "<<P<<std::endl;
+	    //std::cout<<"Rounding up point - "<<P<<std::endl;
 	    Vector roundedTens = RoundToNearestTens(P);
 	    if(isRTaHole(roundedTens)){
-	        std::cout<<"RT is a hole - "<<roundedTens<<std::endl;
+	        //std::cout<<"RT is a hole - "<<roundedTens<<std::endl;
 	        return roundedTens;
 	    }
 	    else{
@@ -205,14 +286,9 @@ public:
 	            else
 	                roundedHole = Vector(roundedTens.X()-10, roundedTens.Y());
 	        }
-	            std::cout<<"Rounded hole - "<<roundedHole<<std::endl;
+	            //std::cout<<"Rounded hole - "<<roundedHole<<std::endl;
 	            return roundedHole;
 	        }
-	}
-
-	void FindHoleToOccupy(){
-	    //Round current position to nearest hole
-	    //Determine the best hole to occupy
 	}
 };
 

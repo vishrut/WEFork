@@ -92,7 +92,7 @@ void Player::Run()
     //TIMETEST("Run");
 
 	static Time last_time = Time(-100, 0);
-	//std::cout << "Player run called - " << mpAgent->GetSelfUnum() << std::endl;
+
 	mpObserver->Lock();
 
 	/** 下面几个更新顺序不能变 */
@@ -102,7 +102,6 @@ void Player::Run()
 	mpWorldModel->Update(mpObserver);
 
 	mpObserver->UnLock();
-	//std::cout << "Player run called and unlocked - " << mpAgent->GetSelfUnum() << std::endl;
 	
     const Time & time = mpAgent->GetWorldState().CurrentTime();
 
@@ -116,18 +115,17 @@ void Player::Run()
 
 	last_time = time;
 
-    //Look here
+    //Look here - Player logic starts from here
 	PlayMode mpCurrentPlayMode = mpAgent->World().GetPlayMode();
 	PlayerState mpCurrentPlayerState = mpAgent->GetSelf();
 	PositionInfo mpCurrentPositionInfo = mpAgent->Info().GetPositionInfo();
     Vector myPosition = mpAgent->GetSelf().GetPos();
     double myDisToBall = mpCurrentPositionInfo.GetBallDistToPlayer(mpAgent->GetSelfUnum());
     Vector ballpos = mpAgent->GetWorldState().GetBall().GetPos();
-	//std::cout << "PlayMode - " << mpCurrentPlayMode <<std::endl;
 
     if(mpCurrentPlayMode==PM_Before_Kick_Off){
-    	//std::cout << "Before kick off - " << mpCurrentPlayMode <<std::endl;
-    	if(!isPositioned){
+    	//TODO: Replace with an array + loop
+        if(!isPositioned){
     		std::cout << "Not yet positioned" << std::endl;
     		if(mpAgent->GetSelfUnum() == 1){
     			Vector player_pos = Vector(-40.0, 0.0);
@@ -166,13 +164,13 @@ void Player::Run()
     			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 7){
-    			Vector player_pos = Vector(-10.0, -10.0);
+    			Vector player_pos = Vector(-15.0, -15.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
     			std::cout << "Positioned" << std::endl;
     		}
     		if(mpAgent->GetSelfUnum() == 8){
-    			Vector player_pos = Vector(-10.0, 10.0);
+    			Vector player_pos = Vector(-15.0, 15.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
     			std::cout << "Positioned" << std::endl;
@@ -201,57 +199,33 @@ void Player::Run()
     	if(mpCurrentPlayerState.IsKickable()){
             //if suitable holes have players available, pass
             //else, hold on to ball
-
             Vector nearestHole = RoundToNearestHole(myPosition);
             if(PassPlayersAvailable()){
-                std::cout<<"Pass players available"<<std::endl;
                 PassToBestPlayer();
             }
             else{
                 ActiveBehavior beh = ActiveBehavior(*mpAgent, BT_Hold);
-
                 if (beh.GetType() != BT_None) {
-                    std::cout<<"Behavior recvd"<<std::endl;
                     mpAgent->SetActiveBehaviorInAct(beh.GetType());
                     if(beh.Execute())
-                        std::cout<<"Behavior executed"<<std::endl;
+                        std::cout<<"Holding ball"<<std::endl;
                 }
             }
-
-            /*
-            if(mpAgent->GetSelfUnum()!=10){
-                ActiveBehavior beh = ActiveBehavior(*mpAgent, BT_Hold);
-
-                if (beh.GetType() != BT_None) {
-                    std::cout<<"Behavior recvd"<<std::endl;
-                    mpAgent->SetActiveBehaviorInAct(beh.GetType());
-                    if(beh.Execute())
-                        std::cout<<"Behavior executed"<<std::endl;
-                }
-            }
-            
-            else{
-                RoundToNearestHole(myPosition);
-        		std::cout<<"Ball kickable - "<<mpAgent->GetSelfUnum()<<std::endl;
-        		Unum mpClosestPlayer = mpCurrentPositionInfo.GetClosestTeammateToPlayer(mpAgent->GetSelfUnum());          
-
-                std::cout<<"Closest player - "<<mpClosestPlayer<<std::endl;
-                Vector target_pos = mpAgent->GetWorldState().GetTeammate(mpClosestPlayer).GetPos();
-                std::cout<<"Target player pos - "<< target_pos <<std::endl;
-
-                if(Kicker::instance().KickBall(*mpAgent, target_pos, ServerParam::instance().ballSpeedMax()/2, KM_Hard, 0, false))
-                    std::cout <<"Kick successful"<<std::endl;
-            }
-            */
             std::cout <<"--------------------------------------------------------"<<std::endl;   
-            
     	}
-        else if(myDisToBall<3){
+        else if(myDisToBall<=2){
+            Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
+        }
+        else if(myDisToBall>2){
+            if(BallKickableByATeammate()){
+                DecideAndOccupyHole();
+            }
+            else if(mpAgent->GetSelfUnum()==10)
+                Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
             //if ball is with a player
                 //if player has empty holes, dash to the hole
                 //else, do nothing
             //else, do nothing
-            Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
         }
     }
     	
@@ -266,5 +240,4 @@ void Player::Run()
     mpAgent->SetHistoryActiveBehaviors(); //Hereo
 
 	Logger::instance().LogSight();
-	//std::cout << "Player run called and unlocked and completed - " << mpAgent->GetSelfUnum() << std::endl;	
 }
