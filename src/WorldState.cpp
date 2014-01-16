@@ -506,7 +506,7 @@ void WorldStateUpdater::UpdateFromAudio()
 	}
 	else if (mpObserver->Audio().IsTeammateSayValid())
 	{
-        // update by teammate say
+		// update by teammate say
         mpObserver->ResetTeammateSayValid();
 
 		int type = mpObserver->Audio().GetHearInfoType();

@@ -131,7 +131,7 @@ void Player::Run()
     			Vector player_pos = Vector(-40.0, 0.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
-    		}
+            }
     		if(mpAgent->GetSelfUnum() == 2){
     			Vector player_pos = Vector(-20.0, -20.0);
     			mpAgent->Move(player_pos);
@@ -186,13 +186,17 @@ void Player::Run()
         std::cout << "Positioned" << std::endl;
     }
     else {
+        mpAgent->Say("yoyoyo");
+            
         //TODO: Use transit variable for faster calling of the OccupyHole/Dasher functions
         //TODO: Better dash function
         //TODO: Look at buffer values
         //TODO: Find why ball holding is competed by players
         //TODO: Look at TODOs in the header file
+        //TODO: Create a 'holding'/'waiting' variable which is true when the player is sspposed to kick the ball    
+        //std::cout<<"yo, da msg is - "<<mpObserver->Audio().GetTeammateSayContent().c_str()<<std::endl;
         if(mpIntransit){
-            if(!AreSamePoints(myPosition, mpTarget, 1))
+            if(!AreSamePoints(myPosition, mpTarget, 1.0))
                 Dasher::instance().GoToPoint(*mpAgent, mpTarget, 0.3, 100, true, false);
             else
                 mpIntransit = false;
@@ -217,7 +221,7 @@ void Player::Run()
                
     	}
                
-        else if(myDisToBall<=3){
+        else if(myDisToBall<=1){
             //Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
             mpIntransit = true;
             mpTarget = ballpos;

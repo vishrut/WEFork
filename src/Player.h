@@ -80,7 +80,7 @@ public:
     	Vector frontdown = Vector(currentHole.X()+10, currentHole.Y()+10);
     	Vector backdown = Vector(currentHole.X()-10, currentHole.Y()+10);
     	
-    	double buffer = 1;
+    	double buffer = 1.0;
     	
     	//TODO: Can be replaced by the IsOccupied function
     	if(mpAgent->GetSelfUnum()==100){
@@ -110,7 +110,7 @@ public:
 
     bool IsOccupied(Vector target){
     	//Returns true if target is occupied by a player
-    	double buffer = 1;
+    	double buffer = 1.0;
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     		if(AreSamePoints(player_pos, target, buffer))
@@ -147,7 +147,7 @@ public:
     	
     	Vector BHPos;
     	
-    	double buffer = 1;
+    	double buffer = 1.0;
     	for(Unum i=1; i<=11; i++){
     		if(mpAgent->GetWorldState().GetTeammate(i).IsKickable()){
     			BHPos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
@@ -208,7 +208,7 @@ public:
     	Vector frontdown = Vector(currentHole.X()+10, currentHole.Y()+10);
     	Vector backdown = Vector(currentHole.X()-10, currentHole.Y()+10);
     	
-    	double buffer = 1;
+    	double buffer = 1.0;
     	
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
