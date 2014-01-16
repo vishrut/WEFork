@@ -252,8 +252,10 @@ bool ActionEffector::SetTurnNeckAction(AngleDeg angle)
 
 bool ActionEffector::SetSayAction(std::string msg)
 {
+	//std::cout<<"###############################################"<<std::endl;
 	if (mIsSay == true)
 	{
+		std::cout<<"mIsSay true *****************************************"<<std::endl;
 		return false;
 	}
 
@@ -268,6 +270,8 @@ bool ActionEffector::SetSayAction(std::string msg)
     {
         if (msg.length() > ServerParam::instance().sayMsgSize())
         {
+        	std::cout<<"my size - "<<msg.length()<<", max size - "<<ServerParam::instance().sayMsgSize()<<std::endl;
+        	std::cout<<"oversized *****************************************"<<std::endl;
             return false;
         }
     }

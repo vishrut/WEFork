@@ -39,6 +39,11 @@
 #include "PositionInfo.h"
 #include "Strategy.h"
 #include "Analyser.h"
+#include <cstdlib>
+ #include <stdio.h>
+#include <stdlib.h>
+ #include <iostream>
+ #include <string>
 //#include "Formation.h" //hereo
 
 class WorldModel;
@@ -83,10 +88,15 @@ class Agent
 public:
 	virtual ~Agent();
 
-	void SetRecvdMsg(std::string strmsg){
-		std::cout<<"agent recvd msg - "<<strmsg<<std::endl;
+	void SetRecvdMsg(std::string strmsg);
+
+	bool GetFollowBall(){
+		return FollowBall;
 	}
 
+	void SetFollowBall(bool follow){
+		FollowBall = follow;
+	}
 	/**
 	 * Interface to create an agent which represents a team mate.
 	 */
@@ -269,6 +279,8 @@ private:
 	InfoState  * mpInfoState;
 
 	bool mIsNewSight;
+	bool FollowBall = false;
+		
 	Time mBallSeenTime;
 
 	/** 以下变量在第一次使用时生成指向实例，在每次调用时检查是否需要更新 */

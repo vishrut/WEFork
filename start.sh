@@ -32,7 +32,7 @@
 
 HOST="localhost"
 PORT="6000"
-VERSION="Release"
+VERSION="Debug"
 BINARY="WEBase"
 TEAM_NAME="WEBase"
 

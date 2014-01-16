@@ -85,8 +85,6 @@ void Player::SendOptionToServer()
 	std::cout << "SendOptionToServer returning"<<std::endl;
 }
 
-
-
 void Player::Run()
 {
     //TIMETEST("Run");
@@ -125,7 +123,7 @@ void Player::Run()
 
     if(mpCurrentPlayMode==PM_Before_Kick_Off){
     	//TODO: Replace with an array + loop
-        std::cout<<PlayerParam::instance().teamName()<<std::endl;
+        //std::cout<<PlayerParam::instance().teamName()<<std::endl;
         if(!isPositioned){
     		if(mpAgent->GetSelfUnum() == 1){
     			Vector player_pos = Vector(-40.0, 0.0);
@@ -182,24 +180,42 @@ void Player::Run()
     			mpAgent->Move(player_pos);
     			isPositioned = true;
     		}
+            std::cout << "Positioned" << std::endl;
     	}
-        std::cout << "Positioned" << std::endl;
     }
+
     else {
-        mpAgent->Say("yoyoyo");
-            
+        
+        
+        if(mpAgent->GetFollowBall()&&myDisToBall<=2){
+            //std::cout<<"Player "<<mpAgent->GetSelfUnum() <<" following ball"<<std::endl;
+            //std::cout<<mpAgent->RecvdMsg<<std::endl;
+            mpIntransit = true;
+            mpTarget = ballpos;
+            //mpAgent->SetFollowBall(false);
+        }
+        
+        /*
+        if(mpAgent->GetFollowBall()){
+            mpIntransit = true;
+            mpTarget = ballpos;
+        }
+        */
+
         //TODO: Use transit variable for faster calling of the OccupyHole/Dasher functions
         //TODO: Better dash function
         //TODO: Look at buffer values
         //TODO: Find why ball holding is competed by players
         //TODO: Look at TODOs in the header file
         //TODO: Create a 'holding'/'waiting' variable which is true when the player is sspposed to kick the ball    
-        //std::cout<<"yo, da msg is - "<<mpObserver->Audio().GetTeammateSayContent().c_str()<<std::endl;
+        
         if(mpIntransit){
-            if(!AreSamePoints(myPosition, mpTarget, 1.0))
+            if(!AreSamePoints(myPosition, mpTarget, 0.3))
                 Dasher::instance().GoToPoint(*mpAgent, mpTarget, 0.3, 100, true, false);
-            else
+            else{
                 mpIntransit = false;
+                mpAgent->SetFollowBall(false);
+            }
         }
         else if(mpCurrentPlayerState.IsKickable()){
             //&&!BallKickableByATeammate()
@@ -207,7 +223,7 @@ void Player::Run()
             //else, hold on to ball
             Vector nearestHole = RoundToNearestHole(myPosition);
             if(PassPlayersAvailable()){
-                std::cout <<"------------------------------------------------------"<<std::endl;
+                std::cout <<"-------------------------------------------------"<<std::endl;
                 PassToBestPlayer();
             }
             else{
@@ -230,7 +246,7 @@ void Player::Run()
         else {
             //if(myDisToBall>1)
             if(BallKickableByATeammate()){
-                std::cout<<"will decide and occupy hole - "<<mpAgent->GetSelfUnum()<<std::endl;
+                //std::cout<<"will decide , occupy hole - "<<mpAgent->GetSelfUnum()<<std::endl;
                 DecideAndOccupyHole();
             }
             //else if(mpAgent->GetSelfUnum()==10);

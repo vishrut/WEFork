@@ -31,6 +31,9 @@
  ************************************************************************************/
 
 #include <cstdlib>
+ #include <stdio.h>
+#include <stdlib.h>
+ #include <string>
 #include "Agent.h"
 #include "WorldModel.h"
 
@@ -49,6 +52,7 @@ Agent::Agent(Unum unum, WorldModel *world_model, bool reverse):
     mpActionEffector(0)
     //mpFormation(0) //Hereo
 {
+	//Recvdmsg = "initialmsg";
 }
 
 /**
@@ -109,6 +113,22 @@ void Agent::SaveActiveBehavior(const ActiveBehavior & beh)
 		mActiveBehavior[type] = new ActiveBehavior(beh);
 	}
 }
+
+void Agent::SetRecvdMsg(std::string strmsg){
+		std::cout<<"The agent "<< GetSelfUnum() <<" recvd msg - "<<strmsg<<std::endl;
+		unsigned pos = strmsg.find("X");
+		//std::cout<<"X is at "<<pos<<std::endl;
+		std::string sub = strmsg.substr(pos+1);
+		int value = atoi(sub.c_str());
+		std::cout<<"Target player is "<<value<<std::endl;
+		if(value==GetSelfUnum()){
+			std::cout<<"Player "<<GetSelfUnum()<<" setting follow ball"<<std::endl;
+			SetFollowBall(true);
+		}
+		else
+			SetFollowBall(false);
+	}
+
 
 ActiveBehavior *Agent::GetLastActiveBehavior(BehaviorType type) const
 {

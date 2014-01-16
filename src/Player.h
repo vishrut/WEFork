@@ -50,6 +50,8 @@
 #include "Dasher.h"
 #include "Kicker.h"
 #include "Tackler.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 class DecisionTree;
 class  BeliefState;
@@ -80,7 +82,7 @@ public:
     	Vector frontdown = Vector(currentHole.X()+10, currentHole.Y()+10);
     	Vector backdown = Vector(currentHole.X()-10, currentHole.Y()+10);
     	
-    	double buffer = 1.0;
+    	double buffer = 0.3;
     	
     	//TODO: Can be replaced by the IsOccupied function
     	if(mpAgent->GetSelfUnum()==100){
@@ -110,7 +112,7 @@ public:
 
     bool IsOccupied(Vector target){
     	//Returns true if target is occupied by a player
-    	double buffer = 1.0;
+    	double buffer = 0.3;
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     		if(AreSamePoints(player_pos, target, buffer))
@@ -133,7 +135,7 @@ public:
     			mindisUnum = i;
     		}
     	}
-    	std::cout<<"Player "<<mpAgent->GetSelfUnum()<<"thinks player "<<mindisUnum<<"is closest to hole"<<std::endl;
+    	//std::cout<<"Player "<<mpAgent->GetSelfUnum()<<"thinks player "<<mindisUnum<<"is closest to hole"<<std::endl;
     	if(mpAgent->GetSelfUnum()==mindisUnum)
     		return true;
     	else 
@@ -147,7 +149,7 @@ public:
     	
     	Vector BHPos;
     	
-    	double buffer = 1.0;
+    	double buffer = 0.3;
     	for(Unum i=1; i<=11; i++){
     		if(mpAgent->GetWorldState().GetTeammate(i).IsKickable()){
     			BHPos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
@@ -208,33 +210,70 @@ public:
     	Vector frontdown = Vector(currentHole.X()+10, currentHole.Y()+10);
     	Vector backdown = Vector(currentHole.X()-10, currentHole.Y()+10);
     	
-    	double buffer = 1.0;
+    	double buffer = 0.3;
+        double f = 0.75;
+                
+        //sstm << msgstr << mynum;
+        //result = sstm.str();
+        //mpAgent->Say(result);
     	
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     		if(AreSamePoints(player_pos, frontup, buffer)){
-    			Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()/2, KM_Hard, 0, false);
+                std::string msgstr = "cusp";
+                Unum mynum = mpAgent->GetSelfUnum();
+                std::string result;
+                std::stringstream sstm;
+                sstm << msgstr << mynum <<"X"<< i;
+                result.append(sstm.str());
+                std::cout<<"saying - "<<result<<std::endl;
+                mpAgent->Say(result);
+    			Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
     			return;
     		}
     	}
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     		if(AreSamePoints(player_pos, frontdown, buffer)){
-    			Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()/2, KM_Hard, 0, false);
+                std::string msgstr = "cusp";
+                Unum mynum = mpAgent->GetSelfUnum();
+                std::string result;
+                std::stringstream sstm;
+                sstm << msgstr << mynum <<"X"<< i;
+                result.append(sstm.str());
+                std::cout<<"saying - "<<result<<std::endl;
+                mpAgent->Say(result);
+                Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
     			return;
     		}
     	}
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     		if(AreSamePoints(player_pos, backup, buffer)){
-    			Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()/2, KM_Hard, 0, false);
+                std::string msgstr = "cusp";
+                Unum mynum = mpAgent->GetSelfUnum();
+                std::string result;
+                std::stringstream sstm;
+                sstm << msgstr << mynum <<"X"<< i;
+                result.append(sstm.str());
+                std::cout<<"saying - "<<result<<std::endl;
+                mpAgent->Say(result);
+                Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
     			return;
     		}
     	}
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     		if(AreSamePoints(player_pos, backdown, buffer)){
-    			Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()/2, KM_Hard, 0, false);
+                std::string msgstr = "cusp";
+                Unum mynum = mpAgent->GetSelfUnum();
+                std::string result;
+                std::stringstream sstm;
+                sstm << msgstr << mynum <<"X"<< i;
+                result.append(sstm.str());
+                std::cout<<"saying - "<<result<<std::endl;
+                mpAgent->Say(result);
+                Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
     			return;
     		}
     	}
