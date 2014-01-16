@@ -81,17 +81,10 @@ class Agent
 	Agent(Unum unum, WorldModel *world_model, bool reverse);
 
 public:
-
-	std::string LastRecvdMsg;
-	bool ShouldTransit;
-	Vector TargetPos;
 	virtual ~Agent();
 
-	void SetLastRecvdMsg(string msg){
-		//Process msg and set variables
-		std::cout<<"Agent "<<GetSelfUnum()<< " received message - "<<msg<<std::endl;
-		ShouldTransit = true;
-		Vector TargetPos = Vector(0,0);
+	void SetRecvdMsg(std::string strmsg){
+		std::cout<<"agent recvd msg - "<<strmsg<<std::endl;
 	}
 
 	/**

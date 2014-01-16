@@ -542,30 +542,29 @@ void CommunicateSystem::ParseReceivedTeammateMsg(unsigned char *msg)
 	std::string msgstr;
 	msgstr.append(reinterpret_cast<const char*>(msg));
 	if(msgstr.substr(0,4).compare("yoyo")==0){
-		mpAgent->SetLastRecvdMsg(msgstr);
-		//std::cout<<"Message is "<<msg<<std::endl;
+		//mpAgent->SetLastRecvdMsg(msgstr);
+		std::cout<<"Message is "<<msg<<std::endl;
+		mpAgent->SetRecvdMsg(msgstr);
 	}
 
-	else{
-		Decode(msg, bits);
+	Decode(msg, bits);
 
-		DWORD64 mask = 1;
-		mask <<= (MAX_BITS_USED + mCommuFlagBitCount);
-		mask -= 1;
-		bits += ~mask; //高三位补1
+	DWORD64 mask = 1;
+	mask <<= (MAX_BITS_USED + mCommuFlagBitCount);
+	mask -= 1;
+	bits += ~mask; //高三位补1
 
-		CommuType type = static_cast<CommuType>(bits & mCommuFlagMask);
-		bits >>= mCommuFlagBitCount;
+	CommuType type = static_cast<CommuType>(bits & mCommuFlagMask);
+	bits >>= mCommuFlagBitCount;
 
-		if (type == FREE_FORM){
-			Logger::instance().GetTextLogger("receive") << "freeform" << endl;
-			RecvFreeForm(bits);
-		}
-		else {
-			Logger::instance().GetTextLogger("receive") << "???" << endl;
-			PRINT_ERROR(msg);
-			//TODO: 其他信息
-		}
+	if (type == FREE_FORM){
+		Logger::instance().GetTextLogger("receive") << "freeform" << endl;
+		RecvFreeForm(bits);
+	}
+	else {
+		Logger::instance().GetTextLogger("receive") << "???" << endl;
+		PRINT_ERROR(msg);
+		//TODO: 其他信息
 	}
 }
 
