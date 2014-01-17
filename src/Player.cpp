@@ -184,14 +184,32 @@ void Player::Run()
     	}
     }
 
-    else {
-        
-        
-        if(mpAgent->GetFollowBall()&&myDisToBall<=2){
+    else {  
+        if(mpAgent->GetFollowBall()){
+            if(mpCurrentPlayerState.IsKickable()){
+                mpAgent->SetFollowBall(false);
+                Vector nearestHole = RoundToNearestHole(myPosition);
+                if(PassPlayersAvailable()){
+                    std::cout <<"-----------------------------------------------------"<<std::endl;
+                    PassToBestPlayer();
+                    //mpAgent->SetFollowBall(false);
+                }
+                else{
+                    ActiveBehavior beh = ActiveBehavior(*mpAgent, BT_Hold);
+                    if (beh.GetType() != BT_None) {
+                        mpAgent->SetActiveBehaviorInAct(beh.GetType());
+                        if(beh.Execute());
+                        //mpAgent->SetFollowBall(false);
+                            //std::cout<<"Holding ball."<<std::endl;
+                    }
+                }
+            }
+            else
+                Dasher::instance().GetBall(*mpAgent, -1, true, false);
             //std::cout<<"Player "<<mpAgent->GetSelfUnum() <<" following ball"<<std::endl;
             //std::cout<<mpAgent->RecvdMsg<<std::endl;
-            mpIntransit = true;
-            mpTarget = ballpos;
+            //mpIntransit = true;
+            //mpTarget = ballpos;
             //mpAgent->SetFollowBall(false);
         }
         
@@ -209,44 +227,58 @@ void Player::Run()
         //TODO: Look at TODOs in the header file
         //TODO: Create a 'holding'/'waiting' variable which is true when the player is sspposed to kick the ball    
         
-        if(mpIntransit){
+        
+        else if(mpIntransit){
             if(!AreSamePoints(myPosition, mpTarget, 0.3))
                 Dasher::instance().GoToPoint(*mpAgent, mpTarget, 0.3, 100, true, false);
             else{
                 mpIntransit = false;
-                mpAgent->SetFollowBall(false);
+                //mpAgent->SetFollowBall(false);
             }
         }
+        
         else if(mpCurrentPlayerState.IsKickable()){
+            //mpAgent->SetFollowBall(false);
+            //mpAgent->SetFollowBall(false);
             //&&!BallKickableByATeammate()
             //if suitable holes have players available, pass
             //else, hold on to ball
+            std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - ball kickable"<<std::endl;
             Vector nearestHole = RoundToNearestHole(myPosition);
             if(PassPlayersAvailable()){
-                std::cout <<"-------------------------------------------------"<<std::endl;
+                std::cout <<"--------------------------------------------------------"<<std::endl;
+                std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - pass players available"<<std::endl;
                 PassToBestPlayer();
+                //mpAgent->SetFollowBall(false);
             }
             else{
+                std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - holding ball"<<std::endl;
                 ActiveBehavior beh = ActiveBehavior(*mpAgent, BT_Hold);
                 if (beh.GetType() != BT_None) {
                     mpAgent->SetActiveBehaviorInAct(beh.GetType());
                     if(beh.Execute());
+                    //mpAgent->SetFollowBall(false);
                         //std::cout<<"Holding ball."<<std::endl;
                 }
             }
                
     	}
+        
                
         else if(myDisToBall<=1){
             //Dasher::instance().GoToPoint(*mpAgent, ballpos, 0.3, 100, true, false);
-            mpIntransit = true;
-            mpTarget = ballpos;
+            std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - in transit towards ball"<<std::endl;
+            //mpIntransit = true;
+            //mpTarget = ballpos;
+            mpAgent->SetFollowBall(true);
         }
+        
+        
 
         else {
             //if(myDisToBall>1)
             if(BallKickableByATeammate()){
-                //std::cout<<"will decide , occupy hole - "<<mpAgent->GetSelfUnum()<<std::endl;
+                std::cout<<"ball kickable by teammate - will decide and occupy hole - "<<mpAgent->GetSelfUnum()<<std::endl;
                 DecideAndOccupyHole();
             }
             //else if(mpAgent->GetSelfUnum()==10);

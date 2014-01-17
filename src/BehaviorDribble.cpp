@@ -116,7 +116,7 @@ bool BehaviorDribbleExecuter::Execute(const ActiveBehavior & dribble)
 				else return Dasher::instance().GoToPoint( mAgent , dribble.mTarget,0.01,100 );
 
 			}
-			return Kicker::instance().KickBall(mAgent ,agentpos + Polar2Vector(mSelfState.GetKickableArea(),agentang + p * 45) , outSpeed,KM_Hard);
+			return true; // hereo Kicker::instance().KickBall(mAgent ,agentpos + Polar2Vector(mSelfState.GetKickableArea(),agentang + p * 45) , outSpeed,KM_Hard);
 		}
 		else {
 			if ( mSelfState.GetStamina() < 2700)
@@ -127,7 +127,7 @@ bool BehaviorDribbleExecuter::Execute(const ActiveBehavior & dribble)
 		}
 	}
 	else /*if(dribble.mDetailType == BDT_Dribble_Fast)*/{
-		return Kicker::instance().KickBall(mAgent, dribble.mAngle, dribble.mKickSpeed, KM_Quick);
+		return true;// hereo Kicker::instance().KickBall(mAgent, dribble.mAngle, dribble.mKickSpeed, KM_Quick);
 	}
 
 }

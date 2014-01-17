@@ -66,7 +66,7 @@ bool BehaviorHoldExecuter::Execute(const ActiveBehavior & hold)
 		return Dasher::instance().GetTurnBodyToAngleAction(mAgent, hold.mAngle).Execute(mAgent);
 	}
 	else
-		return Kicker::instance().KickBallCloseToBody(mAgent ,hold.mAngle, 0.6);
+		return Kicker::instance().KickBallCloseToBody(mAgent ,hold.mAngle, 0.01);//hereo orig 0.6
 }
 
 BehaviorHoldPlanner::BehaviorHoldPlanner(Agent & agent) :

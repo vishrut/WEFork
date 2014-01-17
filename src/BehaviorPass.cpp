@@ -75,14 +75,14 @@ bool BehaviorPassExecuter::Execute(const ActiveBehavior & pass)
 	std::cout<<"Inside pass execute"<<std::endl;
 	Logger::instance().LogPass(false, mBallState.GetPos(), pass.mTarget, "@Pass", true);
 	if (pass.mDetailType == BDT_Pass_Direct)
-		return Kicker::instance().KickBall(mAgent, pass.mTarget, pass.mKickSpeed, KM_Quick);
+		return true; //hereo Kicker::instance().KickBall(mAgent, pass.mTarget, pass.mKickSpeed, KM_Quick);
 	if(pass.mDetailType == BDT_Pass_Clear){
 		//		Logger::instance().GetTextLogger("Clear")<< mWorldState.CurrentTime().S() + "Clear";
 		if(	Tackler::instance().CanTackleToDir(mAgent, pass.mAngle)
 				&& Tackler::instance().GetBallVelAfterTackle(mAgent,pass.mAngle).Mod() > Kicker::instance().GetMaxSpeed(mAgent,pass.mTarget,1) - 0.08)
 			return Tackler::instance().TackleToDir(mAgent,pass.mAngle);
 		else
-			return Kicker::instance().KickBall(mAgent, pass.mTarget, ServerParam::instance().ballSpeedMax(), KM_Quick, 0);
+			return true;// hereo Kicker::instance().KickBall(mAgent, pass.mTarget, ServerParam::instance().ballSpeedMax(), KM_Quick, 0);
 	}
 	return false;
 

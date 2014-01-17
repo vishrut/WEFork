@@ -164,19 +164,20 @@ public:
     	Vector BHbackdown = Vector(BHPos.X()-10, BHPos.Y()+10);
     	//if frontup&frontdown not occupied (+ other conditions), move there
     	//TODO: Currently, it is possible that one player is expected to fill both the holes
-    	if(!IsOccupied(BHfrontup)&&!IsOccupied(BHfrontdown)){
+    	if(!IsOccupied(BHfrontup)||!IsOccupied(BHfrontdown)){
     		//&&mpAgent->GetSelfUnum()!=10
     		//if closest to frontup/frontdown, occupy it
-    		if(IsClosest(BHfrontup))
+    		if(IsClosest(BHfrontup)&&!IsOccupied(BHfrontup))
     			OccupyHole(RoundToNearestHole(BHfrontup));
-    		else if(IsClosest(BHfrontdown))
+    		else if(IsClosest(BHfrontdown)&&!IsOccupied(BHfrontdown))
     			OccupyHole(RoundToNearestHole(BHfrontdown));
     	}
-    	else if(!IsOccupied(BHbackup)&&!IsOccupied(BHbackdown)&&mpAgent->GetSelfUnum()==10){
+    	else if(!IsOccupied(BHbackup)||!IsOccupied(BHbackdown)){
+            //&&mpAgent->GetSelfUnum()==10    
     		//if closest to frontup/frontdown, occupy it
-    		if(IsClosest(BHbackup))
+    		if(IsClosest(BHbackup)&&!IsOccupied(BHbackup))
     			OccupyHole(RoundToNearestHole(BHbackup));
-    		else if(IsClosest(BHbackdown))
+    		else if(IsClosest(BHbackdown)&&!IsOccupied(BHbackdown))
     			OccupyHole(RoundToNearestHole(BHbackdown));
     	}
     }
@@ -211,7 +212,7 @@ public:
     	Vector backdown = Vector(currentHole.X()-10, currentHole.Y()+10);
     	
     	double buffer = 0.3;
-        double f = 0.75;
+        double f = 0.6;
                 
         //sstm << msgstr << mynum;
         //result = sstm.str();
@@ -257,9 +258,9 @@ public:
                 sstm << msgstr << mynum <<"X"<< i;
                 result.append(sstm.str());
                 std::cout<<"saying - "<<result<<std::endl;
-                mpAgent->Say(result);
                 Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
-    			return;
+    			mpAgent->Say(result);
+                return;
     		}
     	}
     	for(Unum i=1; i<=11; i++){
