@@ -126,17 +126,17 @@ void Player::Run()
         //std::cout<<PlayerParam::instance().teamName()<<std::endl;
         if(!isPositioned){
     		if(mpAgent->GetSelfUnum() == 1){
-    			Vector player_pos = Vector(-40.0, 0.0);
+    			Vector player_pos = Vector(-45.0, 0.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
             }
     		if(mpAgent->GetSelfUnum() == 2){
-    			Vector player_pos = Vector(-20.0, -20.0);
+    			Vector player_pos = Vector(-45.0, 10.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
     		}
     		if(mpAgent->GetSelfUnum() == 3){
-    			Vector player_pos = Vector(-30.0, -10.0);
+    			Vector player_pos = Vector(-45.0, -10.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
     		}
@@ -146,7 +146,7 @@ void Player::Run()
     			isPositioned = true;
     		}
     		if(mpAgent->GetSelfUnum() == 5){
-    			Vector player_pos = Vector(-30.0, 10.0);
+    			Vector player_pos = Vector(-20.0, -20.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
     		}
@@ -187,21 +187,23 @@ void Player::Run()
     else {  
         if(mpAgent->GetFollowBall()){
             if(mpCurrentPlayerState.IsKickable()){
-                mpAgent->SetFollowBall(false);
+                std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - ball kickable"<<std::endl;
                 Vector nearestHole = RoundToNearestHole(myPosition);
                 if(PassPlayersAvailable()){
-                    std::cout <<"-----------------------------------------------------"<<std::endl;
-                    PassToBestPlayer();
-                    //mpAgent->SetFollowBall(false);
+                    std::cout <<"--------------------------------------------------------"<<std::endl;
+                    std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - pass players available"<<std::endl;
+                    if(PassToBestPlayer())
+                        mpAgent->SetFollowBall(false);
                 }
                 else{
+                    std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - holding ball"<<std::endl;
                     ActiveBehavior beh = ActiveBehavior(*mpAgent, BT_Hold);
                     if (beh.GetType() != BT_None) {
                         mpAgent->SetActiveBehaviorInAct(beh.GetType());
                         if(beh.Execute());
                         //mpAgent->SetFollowBall(false);
                             //std::cout<<"Holding ball."<<std::endl;
-                    }
+                        }
                 }
             }
             else
@@ -248,8 +250,8 @@ void Player::Run()
             if(PassPlayersAvailable()){
                 std::cout <<"--------------------------------------------------------"<<std::endl;
                 std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - pass players available"<<std::endl;
-                PassToBestPlayer();
-                //mpAgent->SetFollowBall(false);
+                if(PassToBestPlayer())
+                  mpAgent->SetFollowBall(false);
             }
             else{
                 std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - holding ball"<<std::endl;
@@ -270,7 +272,8 @@ void Player::Run()
             std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - in transit towards ball"<<std::endl;
             //mpIntransit = true;
             //mpTarget = ballpos;
-            mpAgent->SetFollowBall(true);
+            Dasher::instance().GetBall(*mpAgent, -1, true, false);
+            //mpAgent->SetFollowBall(true);
         }
         
         

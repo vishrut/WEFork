@@ -202,7 +202,7 @@ public:
     	return -1;
     }
 
-    void PassToBestPlayer(){
+    bool PassToBestPlayer(){
     	//TODO: Use transit variable for faster calling of the OccupyHole/Dasher functions
     	Vector myPosition = mpAgent->GetSelf().GetPos();
     	Vector currentHole = RoundToNearestHole(myPosition);
@@ -229,8 +229,8 @@ public:
                 result.append(sstm.str());
                 std::cout<<"saying - "<<result<<std::endl;
                 mpAgent->Say(result);
-    			Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
-    			return;
+    			return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
+    			//return;
     		}
     	}
     	for(Unum i=1; i<=11; i++){
@@ -244,8 +244,8 @@ public:
                 result.append(sstm.str());
                 std::cout<<"saying - "<<result<<std::endl;
                 mpAgent->Say(result);
-                Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
-    			return;
+                return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
+    			//return;
     		}
     	}
     	for(Unum i=1; i<=11; i++){
@@ -258,9 +258,9 @@ public:
                 sstm << msgstr << mynum <<"X"<< i;
                 result.append(sstm.str());
                 std::cout<<"saying - "<<result<<std::endl;
-                Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
-    			mpAgent->Say(result);
-                return;
+                mpAgent->Say(result);
+                return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
+    			//return;
     		}
     	}
     	for(Unum i=1; i<=11; i++){
@@ -274,10 +274,11 @@ public:
                 result.append(sstm.str());
                 std::cout<<"saying - "<<result<<std::endl;
                 mpAgent->Say(result);
-                Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
-    			return;
+                return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
+    			//return;
     		}
     	}
+        return false;
     }
 
 	bool AreSamePoints(Vector A, Vector B, double buffer){
