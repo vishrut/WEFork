@@ -69,7 +69,7 @@ $CLIENT $G_PARAM &
 sleep $SLEEP_TIME
 
 i=2
-while [ $i -le 2 ]; do
+while [ $i -le 1 ]; do
 	echo ">>>>>>>>>>>>>>>>>>>>>> $TEAM_NAME Player: $i"
 	$CLIENT $N_PARAM &
 	sleep $SLEEP_TIME

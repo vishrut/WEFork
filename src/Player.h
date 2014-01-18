@@ -115,7 +115,7 @@ public:
     	double buffer = 0.3;
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
-    		if(AreSamePoints(player_pos, target, buffer))
+    		if(AreSamePoints(player_pos, target, buffer)&&i!=mpAgent->GetSelfUnum())
     			return true;
     	}
     	return false;
@@ -151,7 +151,7 @@ public:
     	
     	double buffer = 0.3;
     	for(Unum i=1; i<=11; i++){
-    		if(mpAgent->GetWorldState().GetTeammate(i).IsKickable()){
+    		if(mpAgent->GetWorldState().GetTeammate(i).IsKickable()&&(i!=mpAgent->GetSelfUnum())){
     			BHPos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     			break;
     		}
@@ -167,18 +167,27 @@ public:
     	if(!IsOccupied(BHfrontup)||!IsOccupied(BHfrontdown)){
     		//&&mpAgent->GetSelfUnum()!=10
     		//if closest to frontup/frontdown, occupy it
-    		if(IsClosest(BHfrontup)&&!IsOccupied(BHfrontup))
-    			OccupyHole(RoundToNearestHole(BHfrontup));
-    		else if(IsClosest(BHfrontdown)&&!IsOccupied(BHfrontdown))
+    		if(IsClosest(BHfrontup)&&!IsOccupied(BHfrontup)){
+                OccupyHole(RoundToNearestHole(BHfrontup));
+                return;
+            }
+    		else if(IsClosest(BHfrontdown)&&!IsOccupied(BHfrontdown)){
     			OccupyHole(RoundToNearestHole(BHfrontdown));
+                return;
+            }
     	}
-    	else if(!IsOccupied(BHbackup)||!IsOccupied(BHbackdown)){
+    	
+        if(!IsOccupied(BHbackup)||!IsOccupied(BHbackdown)){
             //&&mpAgent->GetSelfUnum()==10    
     		//if closest to frontup/frontdown, occupy it
-    		if(IsClosest(BHbackup)&&!IsOccupied(BHbackup))
+    		if(IsClosest(BHbackup)&&!IsOccupied(BHbackup)){
     			OccupyHole(RoundToNearestHole(BHbackup));
-    		else if(IsClosest(BHbackdown)&&!IsOccupied(BHbackdown))
+                return;
+            }
+    		else if(IsClosest(BHbackdown)&&!IsOccupied(BHbackdown)){
     			OccupyHole(RoundToNearestHole(BHbackdown));
+                return;
+            }
     	}
     }
 
