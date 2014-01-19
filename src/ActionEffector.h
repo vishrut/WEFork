@@ -414,6 +414,12 @@ public:
 	bool SetRecoverAction();
 	bool SetCheckBallAction();
 
+	bool GetResetTransit();
+	void SetResetTransit(bool reset);
+
+	int GetTargetUnum();
+	void SetTargetUnum(bool target);
+
 	/**
 	 * Each of the following methods provides an interface to get the number of times a certain action
 	 * has been executed.
@@ -614,6 +620,9 @@ public:
 	int         mChangePlayerTypeCount;
 
 	bool        mIsMutex;
+	bool		mIsReset;
+
+	int 		mTargetUnum;
 
 	bool        mIsTurn;
 	bool        mIsDash;

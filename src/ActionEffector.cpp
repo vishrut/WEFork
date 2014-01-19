@@ -107,9 +107,10 @@ ActionEffector::ActionEffector(Agent & agent):
 	mEarCount           = 0;
 	mSynchSeeCount      = 0;
 	mChangePlayerTypeCount = 0;
+	mTargetUnum     = 10;
 
 	mIsMutex        = false;
-
+	mIsReset		= false;
 	mIsTurn         = false;
 	mIsDash         = false;
 	mIsTurnNeck     = false;
@@ -156,6 +157,20 @@ bool ActionEffector::SetTurnAction(AngleDeg turn_angle)
 	mIsTurn = true;
 	mIsMutex = true;
 	return true;
+}
+
+bool ActionEffector::GetResetTransit(){
+	return mIsReset;
+}
+void ActionEffector::SetResetTransit(bool reset){
+	mIsReset = reset;
+}
+
+int ActionEffector::GetTargetUnum(){
+	return mTargetUnum;
+}
+void ActionEffector::SetTargetUnum(bool target){
+	mTargetUnum = target;
 }
 
 bool ActionEffector::SetDashAction(double power, AngleDeg dir)
@@ -256,6 +271,13 @@ bool ActionEffector::SetSayAction(std::string msg)
 	if (mIsSay == true)
 	{
 		std::cout<<"mIsSay true *****************************************"<<std::endl;
+		if(msg.substr(0,3).compare("cus")==0||msg.substr(0,3).compare("rcu")==0){
+			mSay.Plan(msg);
+			mSay.Execute(mCommandQueue);
+			++mSayCount;
+			mIsSay = true;
+			return true;
+		}
 		return false;
 	}
 
@@ -275,12 +297,16 @@ bool ActionEffector::SetSayAction(std::string msg)
             return false;
         }
     }
+    //std::cout<<"sending message"<<std::endl;
+    if(msg.substr(0,3).compare("cus")==0||msg.substr(0,3).compare("rcu")==0){
+		mSay.Plan(msg);
+		mSay.Execute(mCommandQueue);
+		++mSayCount;
+		mIsSay = true;
+		return true;
+	}
 
-	mSay.Plan(msg);
-	mSay.Execute(mCommandQueue);
-	++mSayCount;
-	mIsSay = true;
-	return true;
+	//return false;
 }
 
 bool ActionEffector::SetAttentiontoAction(Unum num)

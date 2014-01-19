@@ -81,32 +81,32 @@ public:
     	Vector backup = Vector(currentHole.X()-10, currentHole.Y()-10);
     	Vector frontdown = Vector(currentHole.X()+10, currentHole.Y()+10);
     	Vector backdown = Vector(currentHole.X()-10, currentHole.Y()+10);
+
+        Vector fronthor = Vector(currentHole.X()+20, currentHole.Y());
+        Vector backhor = Vector(currentHole.X()-20, currentHole.Y());
+        Vector upvert = Vector(currentHole.X(), currentHole.Y()-20);
+        Vector downvert = Vector(currentHole.X(), currentHole.Y()+20);
     	
-    	double buffer = 0.3;
+    	double buffer = 0.7;
     	
     	//TODO: Can be replaced by the IsOccupied function
-    	if(mpAgent->GetSelfUnum()==100){
-	    	for(Unum i=1; i<=11; i++){
-	    		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
-	    		if( AreSamePoints(player_pos, frontup, buffer)||
-	    		    AreSamePoints(player_pos, frontdown, buffer)||
-	    			AreSamePoints(player_pos, backup, buffer)||
-	    			AreSamePoints(player_pos, backdown, buffer)
-	    			)
-	    			return true;
-	    	}
-	    }
-	    else{
-	    	for(Unum i=1; i<=11; i++){
-	    		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
-	    		if( AreSamePoints(player_pos, frontup, buffer)||
-	    		    AreSamePoints(player_pos, frontdown, buffer)
-	    			){
-	    			std::cout<<"frontpass available"<<std::endl;
-	    			return true;
-	    		}
-	    	}
-	    }
+        //TODO: Return true only if pass is advantageous
+    	
+    	for(Unum i=1; i<=11; i++){
+    		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+    		if( AreSamePoints(player_pos, frontup, buffer)||
+    		    AreSamePoints(player_pos, frontdown, buffer)||
+                AreSamePoints(player_pos, backup, buffer)||
+                AreSamePoints(player_pos, backdown, buffer)||
+                AreSamePoints(player_pos, fronthor, buffer)||
+                AreSamePoints(player_pos, backhor, buffer)||
+                AreSamePoints(player_pos, upvert, buffer)||
+                AreSamePoints(player_pos, downvert, buffer)
+    			){
+    			std::cout<<"pass available"<<std::endl;
+    			return true;
+    		}
+    	}
     	return false;	
     }
 
@@ -121,7 +121,7 @@ public:
     	return false;
     }
 
-    bool IsClosest(Vector target){
+    Unum GetClosest(Vector target){
     	//Excluded ballholder from the below equation
     	double mindis = 999;
     	Unum mindisUnum = 99;
@@ -130,17 +130,161 @@ public:
     		std::cout<<"No ball holder"<<std::endl;
     	for(Unum i=1; i<=11; i++){
     		double PlayerDis = mpAgent->GetWorldState().GetTeammate(i).GetPos().Dist(target);
-    		if(PlayerDis<mindis&&i!=BHUnum){
+    		if(PlayerDis<=mindis&&i!=BHUnum){
     			mindis = PlayerDis;
     			mindisUnum = i;
     		}
     	}
+
+        return mindisUnum;
     	//std::cout<<"Player "<<mpAgent->GetSelfUnum()<<"thinks player "<<mindisUnum<<"is closest to hole"<<std::endl;
-    	if(mpAgent->GetSelfUnum()==mindisUnum)
+    	/*
+        if(mpAgent->GetSelfUnum()==mindisUnum)
     		return true;
     	else 
     		return false;
+            */
     }
+
+    Unum GetClosestExcl1(Vector target, Unum ex1){
+        //Excluded ballholder and ex1 from the below equation
+        //ex1 would already have been assigned to another hole
+        double mindis = 999;
+        Unum mindisUnum = 99;
+        Unum BHUnum = GetBHUnum();
+        if(BHUnum==-1)
+            std::cout<<"No ball holder"<<std::endl;
+        for(Unum i=1; i<=11; i++){
+            double PlayerDis = mpAgent->GetWorldState().GetTeammate(i).GetPos().Dist(target);
+            if(PlayerDis<=mindis&&i!=BHUnum&&i!=ex1){
+                mindis = PlayerDis;
+                mindisUnum = i;
+            }
+        }
+        return mindisUnum;
+        //std::cout<<"Player "<<mpAgent->GetSelfUnum()<<"thinks player "<<mindisUnum<<"is closest to hole"<<std::endl;
+        /*
+        if(mpAgent->GetSelfUnum()==mindisUnum)
+            return true;
+        else 
+            return false;
+            */
+    }
+
+    Unum GetClosestExcl2(Vector target, Unum ex1, Unum ex2){
+        //Excluded ballholder and ex1,2 from the below equation
+        //ex1,2 would already have been assigned to another hole
+        double mindis = 999;
+        Unum mindisUnum = 99;
+        Unum BHUnum = GetBHUnum();
+        if(BHUnum==-1)
+            std::cout<<"No ball holder"<<std::endl;
+        for(Unum i=1; i<=11; i++){
+            double PlayerDis = mpAgent->GetWorldState().GetTeammate(i).GetPos().Dist(target);
+            if(PlayerDis<=mindis&&i!=BHUnum&&i!=ex1&&i!=ex2){
+                mindis = PlayerDis;
+                mindisUnum = i;
+            }
+        }
+       return mindisUnum;
+        //std::cout<<"Player "<<mpAgent->GetSelfUnum()<<"thinks player "<<mindisUnum<<"is closest to hole"<<std::endl;
+        /*
+        if(mpAgent->GetSelfUnum()==mindisUnum)
+            return true;
+        else 
+            return false;
+            */
+    }
+
+    Unum GetClosestExcl3(Vector target, Unum ex1, Unum ex2, Unum ex3){
+        //Excluded ballholder and ex1,2,3 from the below equation
+        //ex1,2,3 would already have been assigned to another hole
+        double mindis = 999;
+        Unum mindisUnum = 99;
+        Unum BHUnum = GetBHUnum();
+        if(BHUnum==-1)
+            std::cout<<"No ball holder"<<std::endl;
+        for(Unum i=1; i<=11; i++){
+            double PlayerDis = mpAgent->GetWorldState().GetTeammate(i).GetPos().Dist(target);
+            if(PlayerDis<=mindis&&i!=BHUnum&&i!=ex1&&i!=ex2&&i!=ex3){
+                mindis = PlayerDis;
+                mindisUnum = i;
+            }
+        }
+        return mindisUnum;
+        //std::cout<<"Player "<<mpAgent->GetSelfUnum()<<"thinks player "<<mindisUnum<<"is closest to hole"<<std::endl;
+        /*
+        if(mpAgent->GetSelfUnum()==mindisUnum)
+            return true;
+        else 
+            return false;
+            */
+    }
+
+    Unum GetClosestExcl4(Vector target, Unum ex1, Unum ex2, Unum ex3, Unum ex4){
+        double mindis = 999;
+        Unum mindisUnum = 99;
+        Unum BHUnum = GetBHUnum();
+        if(BHUnum==-1)
+            std::cout<<"No ball holder"<<std::endl;
+        for(Unum i=1; i<=11; i++){
+            double PlayerDis = mpAgent->GetWorldState().GetTeammate(i).GetPos().Dist(target);
+            if(PlayerDis<=mindis&&i!=BHUnum&&i!=ex1&&i!=ex2&&i!=ex3&&i!=ex4){
+                mindis = PlayerDis;
+                mindisUnum = i;
+            }
+        }
+        return mindisUnum;
+    }
+
+    Unum GetClosestExcl5(Vector target, Unum ex1, Unum ex2, Unum ex3, Unum ex4, Unum ex5){
+        double mindis = 999;
+        Unum mindisUnum = 99;
+        Unum BHUnum = GetBHUnum();
+        if(BHUnum==-1)
+            std::cout<<"No ball holder"<<std::endl;
+        for(Unum i=1; i<=11; i++){
+            double PlayerDis = mpAgent->GetWorldState().GetTeammate(i).GetPos().Dist(target);
+            if(PlayerDis<=mindis&&i!=BHUnum&&i!=ex1&&i!=ex2&&i!=ex3&&i!=ex4&&i!=ex5){
+                mindis = PlayerDis;
+                mindisUnum = i;
+            }
+        }
+        return mindisUnum;
+    }
+
+    Unum GetClosestExcl6(Vector target, Unum ex1, Unum ex2, Unum ex3, Unum ex4, Unum ex5, Unum ex6){
+        double mindis = 999;
+        Unum mindisUnum = 99;
+        Unum BHUnum = GetBHUnum();
+        if(BHUnum==-1)
+            std::cout<<"No ball holder"<<std::endl;
+        for(Unum i=1; i<=11; i++){
+            double PlayerDis = mpAgent->GetWorldState().GetTeammate(i).GetPos().Dist(target);
+            if(PlayerDis<=mindis&&i!=BHUnum&&i!=ex1&&i!=ex2&&i!=ex3&&i!=ex4&&i!=ex5&&i!=ex6){
+                mindis = PlayerDis;
+                mindisUnum = i;
+            }
+        }
+        return mindisUnum;
+    }
+
+    Unum GetClosestExcl7(Vector target, Unum ex1, Unum ex2, Unum ex3, Unum ex4, Unum ex5, Unum ex6, Unum ex7){
+        double mindis = 999;
+        Unum mindisUnum = 99;
+        Unum BHUnum = GetBHUnum();
+        if(BHUnum==-1)
+            std::cout<<"No ball holder"<<std::endl;
+        for(Unum i=1; i<=11; i++){
+            double PlayerDis = mpAgent->GetWorldState().GetTeammate(i).GetPos().Dist(target);
+            if(PlayerDis<=mindis&&i!=BHUnum&&i!=ex1&&i!=ex2&&i!=ex3&&i!=ex4&&i!=ex5&&i!=ex6&&i!=ex7){
+                mindis = PlayerDis;
+                mindisUnum = i;
+            }
+        }
+        return mindisUnum;
+    }
+
 
     void DecideAndOccupyHole(){
     	//Called when another teammate has the ball
@@ -162,8 +306,69 @@ public:
     	Vector BHbackup = Vector(BHPos.X()-10, BHPos.Y()-10);
     	Vector BHfrontdown = Vector(BHPos.X()+10, BHPos.Y()+10);
     	Vector BHbackdown = Vector(BHPos.X()-10, BHPos.Y()+10);
+
+        Vector BHfronthor = Vector(BHPos.X()+20, BHPos.Y());
+        Vector BHbackhor = Vector(BHPos.X()-20, BHPos.Y());
+        Vector BHupvert = Vector(BHPos.X(), BHPos.Y()-20);
+        Vector BHdownvert = Vector(BHPos.X(), BHPos.Y()+20);
     	//if frontup&frontdown not occupied (+ other conditions), move there
     	//TODO: Currently, it is possible that one player is expected to fill both the holes
+
+        Unum FU, FD, BU, BD;
+        Unum FH, BH, UV, DV;
+
+        //&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25
+
+        FU = GetClosest(BHfrontup);
+        if(FU==mpAgent->GetSelfUnum()&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25){
+            OccupyHole(BHfrontup);
+            std::cout<<"Player "<<FU<<" occupying frontup"<<std::endl;
+        }
+
+        FD = GetClosestExcl1(BHfrontdown, FU);
+        if(FD==mpAgent->GetSelfUnum()&&BHfrontdown.X()>=-45&&BHfrontdown.X()<=45&&BHfrontdown.Y()>=-25&&BHfrontdown.Y()<=25){
+            OccupyHole(BHfrontdown);
+            std::cout<<"Player "<<FD<<" occupying frontdown"<<std::endl;
+        }
+
+        BU = GetClosestExcl2(BHbackup, FU, FD);
+        if(BU==mpAgent->GetSelfUnum()&&BHbackup.X()>=-45&&BHbackup.X()<=45&&BHbackup.Y()>=-25&&BHbackup.Y()<=25){
+            OccupyHole(BHbackup);
+            std::cout<<"Player "<<BU<<" occupying backup"<<std::endl;
+        }
+        
+        BD = GetClosestExcl3(BHbackdown, FU, FD, BU);
+        if(BD==mpAgent->GetSelfUnum()&&BHbackdown.X()>=-45&&BHbackdown.X()<=45&&BHbackdown.Y()>=-25&&BHbackdown.Y()<=25){
+            OccupyHole(BHbackdown);
+            std::cout<<"Player "<<BD<<" occupying backdown"<<std::endl;
+        }
+
+        FH = GetClosestExcl4(BHfronthor, FU, FD, BU, BD);
+        if(FH==mpAgent->GetSelfUnum()&&BHfronthor.X()>=-45&&BHfronthor.X()<=45&&BHfronthor.Y()>=-25&&BHfronthor.Y()<=25){
+            OccupyHole(BHfronthor);
+            std::cout<<"Player "<<FH<<" occupying backdown"<<std::endl;
+        }
+
+        BH = GetClosestExcl5(BHbackhor, FU, FD, BU, BD, FH);
+        if(BH==mpAgent->GetSelfUnum()&&BHbackhor.X()>=-45&&BHbackhor.X()<=45&&BHbackhor.Y()>=-25&&BHbackhor.Y()<=25){
+            OccupyHole(BHbackhor);
+            std::cout<<"Player "<<BH<<" occupying backdown"<<std::endl;
+        }
+
+        UV = GetClosestExcl6(BHupvert, FU, FD, BU, BD, FH, BH);
+        if(UV==mpAgent->GetSelfUnum()&&BHupvert.X()>=-45&&BHupvert.X()<=45&&BHupvert.Y()>=-25&&BHupvert.Y()<=25){
+            OccupyHole(BHupvert);
+            std::cout<<"Player "<<UV<<" occupying backdown"<<std::endl;
+        }
+
+        DV = GetClosestExcl7(BHdownvert, FU, FD, BU, BD, FH, BH, UV);
+        if(DV==mpAgent->GetSelfUnum()&&BHdownvert.X()>=-45&&BHdownvert.X()<=45&&BHdownvert.Y()>=-25&&BHdownvert.Y()<=25){
+            OccupyHole(BHdownvert);
+            std::cout<<"Player "<<DV<<" occupying backdown"<<std::endl;
+        }
+
+
+        /*
     	if(!IsOccupied(BHfrontup)||!IsOccupied(BHfrontdown)){
     		//&&mpAgent->GetSelfUnum()!=10
     		//if closest to frontup/frontdown, occupy it
@@ -189,6 +394,119 @@ public:
                 return;
             }
     	}
+        */
+    }
+
+    void DecideAndOccupyHole(Unum target){
+        //Called when another teammate has the ball
+        //Decide if the player should support the ballholder by moving to an appropriate hole or not
+        //Act as per the decision
+        
+        Vector BHPos;
+        
+        double buffer = 0.3;
+        
+        if(target!=mpAgent->GetSelfUnum()){
+            BHPos = mpAgent->GetWorldState().GetTeammate(target).GetPos();
+        }
+        else
+            return;
+        
+        BHPos = RoundToNearestHole(BHPos);
+
+        Vector BHfrontup = Vector(BHPos.X()+10, BHPos.Y()-10);
+        Vector BHbackup = Vector(BHPos.X()-10, BHPos.Y()-10);
+        Vector BHfrontdown = Vector(BHPos.X()+10, BHPos.Y()+10);
+        Vector BHbackdown = Vector(BHPos.X()-10, BHPos.Y()+10);
+
+        Vector BHfronthor = Vector(BHPos.X()+20, BHPos.Y());
+        Vector BHbackhor = Vector(BHPos.X()-20, BHPos.Y());
+        Vector BHupvert = Vector(BHPos.X(), BHPos.Y()-20);
+        Vector BHdownvert = Vector(BHPos.X(), BHPos.Y()+20);
+        //if frontup&frontdown not occupied (+ other conditions), move there
+        //TODO: Currently, it is possible that one player is expected to fill both the holes
+
+        Unum FU, FD, BU, BD;
+        Unum FH, BH, UV, DV;
+
+        //&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25
+
+        FU = GetClosest(BHfrontup);
+        if(FU==mpAgent->GetSelfUnum()&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25){
+            OccupyHole(BHfrontup);
+            std::cout<<"Player "<<FU<<" occupying frontup"<<std::endl;
+        }
+
+        FD = GetClosestExcl1(BHfrontdown, FU);
+        if(FD==mpAgent->GetSelfUnum()&&BHfrontdown.X()>=-45&&BHfrontdown.X()<=45&&BHfrontdown.Y()>=-25&&BHfrontdown.Y()<=25){
+            OccupyHole(BHfrontdown);
+            std::cout<<"Player "<<FD<<" occupying frontdown"<<std::endl;
+        }
+
+        BU = GetClosestExcl2(BHbackup, FU, FD);
+        if(BU==mpAgent->GetSelfUnum()&&BHbackup.X()>=-45&&BHbackup.X()<=45&&BHbackup.Y()>=-25&&BHbackup.Y()<=25){
+            OccupyHole(BHbackup);
+            std::cout<<"Player "<<BU<<" occupying backup"<<std::endl;
+        }
+        
+        BD = GetClosestExcl3(BHbackdown, FU, FD, BU);
+        if(BD==mpAgent->GetSelfUnum()&&BHbackdown.X()>=-45&&BHbackdown.X()<=45&&BHbackdown.Y()>=-25&&BHbackdown.Y()<=25){
+            OccupyHole(BHbackdown);
+            std::cout<<"Player "<<BD<<" occupying backdown"<<std::endl;
+        }
+
+        FH = GetClosestExcl4(BHfronthor, FU, FD, BU, BD);
+        if(FH==mpAgent->GetSelfUnum()&&BHfronthor.X()>=-45&&BHfronthor.X()<=45&&BHfronthor.Y()>=-25&&BHfronthor.Y()<=25){
+            OccupyHole(BHfronthor);
+            std::cout<<"Player "<<FH<<" occupying backdown"<<std::endl;
+        }
+
+        BH = GetClosestExcl5(BHbackhor, FU, FD, BU, BD, FH);
+        if(BH==mpAgent->GetSelfUnum()&&BHbackhor.X()>=-45&&BHbackhor.X()<=45&&BHbackhor.Y()>=-25&&BHbackhor.Y()<=25){
+            OccupyHole(BHbackhor);
+            std::cout<<"Player "<<BH<<" occupying backdown"<<std::endl;
+        }
+
+        UV = GetClosestExcl6(BHupvert, FU, FD, BU, BD, FH, BH);
+        if(UV==mpAgent->GetSelfUnum()&&BHupvert.X()>=-45&&BHupvert.X()<=45&&BHupvert.Y()>=-25&&BHupvert.Y()<=25){
+            OccupyHole(BHupvert);
+            std::cout<<"Player "<<UV<<" occupying backdown"<<std::endl;
+        }
+
+        DV = GetClosestExcl7(BHdownvert, FU, FD, BU, BD, FH, BH, UV);
+        if(DV==mpAgent->GetSelfUnum()&&BHdownvert.X()>=-45&&BHdownvert.X()<=45&&BHdownvert.Y()>=-25&&BHdownvert.Y()<=25){
+            OccupyHole(BHdownvert);
+            std::cout<<"Player "<<DV<<" occupying backdown"<<std::endl;
+        }
+
+
+        /*
+        if(!IsOccupied(BHfrontup)||!IsOccupied(BHfrontdown)){
+            //&&mpAgent->GetSelfUnum()!=10
+            //if closest to frontup/frontdown, occupy it
+            if(IsClosest(BHfrontup)&&!IsOccupied(BHfrontup)){
+                OccupyHole(RoundToNearestHole(BHfrontup));
+                return;
+            }
+            else if(IsClosest(BHfrontdown)&&!IsOccupied(BHfrontdown)){
+                OccupyHole(RoundToNearestHole(BHfrontdown));
+                return;
+            }
+        }
+        
+        if(!IsOccupied(BHbackup)||!IsOccupied(BHbackdown)){
+            //&&mpAgent->GetSelfUnum()==10    
+            //if closest to frontup/frontdown, occupy it
+            if(IsClosest(BHbackup)&&!IsOccupied(BHbackup)){
+                OccupyHole(RoundToNearestHole(BHbackup));
+                return;
+            }
+            else if(IsClosest(BHbackdown)&&!IsOccupied(BHbackdown)){
+                OccupyHole(RoundToNearestHole(BHbackdown));
+                return;
+            }
+        }
+        */
     }
 
     bool BallKickableByATeammate(){
@@ -215,11 +533,17 @@ public:
     	//TODO: Use transit variable for faster calling of the OccupyHole/Dasher functions
     	Vector myPosition = mpAgent->GetSelf().GetPos();
     	Vector currentHole = RoundToNearestHole(myPosition);
-    	Vector frontup = Vector(currentHole.X()+10, currentHole.Y()-10);
+    	
+        Vector frontup = Vector(currentHole.X()+10, currentHole.Y()-10);
     	Vector backup = Vector(currentHole.X()-10, currentHole.Y()-10);
     	Vector frontdown = Vector(currentHole.X()+10, currentHole.Y()+10);
     	Vector backdown = Vector(currentHole.X()-10, currentHole.Y()+10);
-    	
+
+        Vector fronthor = Vector(currentHole.X()+20, currentHole.Y());
+        Vector backhor = Vector(currentHole.X()-20, currentHole.Y());
+        Vector upvert = Vector(currentHole.X(), currentHole.Y()-20);
+        Vector downvert = Vector(currentHole.X(), currentHole.Y()+20);
+        
     	double buffer = 0.3;
         double f = 0.6;
                 
@@ -237,7 +561,7 @@ public:
                 sstm << msgstr << mynum <<"X"<< i;
                 result.append(sstm.str());
                 std::cout<<"saying - "<<result<<std::endl;
-                mpAgent->Say(result);
+                while(!(mpAgent->Say(result)));
     			return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
     			//return;
     		}
@@ -252,7 +576,7 @@ public:
                 sstm << msgstr << mynum <<"X"<< i;
                 result.append(sstm.str());
                 std::cout<<"saying - "<<result<<std::endl;
-                mpAgent->Say(result);
+                while(!(mpAgent->Say(result)));
                 return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
     			//return;
     		}
@@ -267,7 +591,7 @@ public:
                 sstm << msgstr << mynum <<"X"<< i;
                 result.append(sstm.str());
                 std::cout<<"saying - "<<result<<std::endl;
-                mpAgent->Say(result);
+                while(!(mpAgent->Say(result)));
                 return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
     			//return;
     		}
@@ -282,11 +606,71 @@ public:
                 sstm << msgstr << mynum <<"X"<< i;
                 result.append(sstm.str());
                 std::cout<<"saying - "<<result<<std::endl;
-                mpAgent->Say(result);
+                while(!(mpAgent->Say(result)));
                 return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
     			//return;
     		}
     	}
+        for(Unum i=1; i<=11; i++){
+            Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+            if(AreSamePoints(player_pos, fronthor, buffer)){
+                std::string msgstr = "cusp";
+                Unum mynum = mpAgent->GetSelfUnum();
+                std::string result;
+                std::stringstream sstm;
+                sstm << msgstr << mynum <<"X"<< i;
+                result.append(sstm.str());
+                std::cout<<"saying - "<<result<<std::endl;
+                while(!(mpAgent->Say(result)));
+                return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
+                //return;
+            }
+        }
+        for(Unum i=1; i<=11; i++){
+            Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+            if(AreSamePoints(player_pos, backhor, buffer)){
+                std::string msgstr = "cusp";
+                Unum mynum = mpAgent->GetSelfUnum();
+                std::string result;
+                std::stringstream sstm;
+                sstm << msgstr << mynum <<"X"<< i;
+                result.append(sstm.str());
+                std::cout<<"saying - "<<result<<std::endl;
+                while(!(mpAgent->Say(result)));
+                return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
+                //return;
+            }
+        }
+        for(Unum i=1; i<=11; i++){
+            Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+            if(AreSamePoints(player_pos, upvert, buffer)){
+                std::string msgstr = "cusp";
+                Unum mynum = mpAgent->GetSelfUnum();
+                std::string result;
+                std::stringstream sstm;
+                sstm << msgstr << mynum <<"X"<< i;
+                result.append(sstm.str());
+                std::cout<<"saying - "<<result<<std::endl;
+                while(!(mpAgent->Say(result)));
+                return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
+                //return;
+            }
+        }
+        for(Unum i=1; i<=11; i++){
+            Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+            if(AreSamePoints(player_pos, downvert, buffer)){
+                std::string msgstr = "cusp";
+                Unum mynum = mpAgent->GetSelfUnum();
+                std::string result;
+                std::stringstream sstm;
+                sstm << msgstr << mynum <<"X"<< i;
+                result.append(sstm.str());
+                std::cout<<"saying - "<<result<<std::endl;
+                while(!(mpAgent->Say(result)));
+                return Kicker::instance().KickBall(*mpAgent, player_pos, ServerParam::instance().ballSpeedMax()*f, KM_Hard, 0, false);
+                //return;
+            }
+        }
         return false;
     }
 

@@ -157,6 +157,14 @@ public:
 	 * Action interfaces
 	 */
 	bool Turn(AngleDeg angle) { return GetActionEffector().SetTurnAction(angle); }
+	
+	bool GetResetVal(){return GetActionEffector().GetResetTransit();}
+	void SetResetVal(bool reset){ GetActionEffector().SetResetTransit(reset);}
+	
+	int GetTargetUnum(){return GetActionEffector().GetTargetUnum();}
+	void SetTargetUnum(int target){ GetActionEffector().SetTargetUnum(target);}
+	
+
 	bool Dash(double power, AngleDeg dir) { return GetActionEffector().SetDashAction(power, dir); }
 	bool TurnNeck(AngleDeg angle) { return GetActionEffector().SetTurnNeckAction(angle); }
 	bool Say(std::string msg) { return GetActionEffector().SetSayAction(msg); }

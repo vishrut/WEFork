@@ -30,12 +30,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                *
  ************************************************************************************/
 
-#include <cstdlib>
+#include "Agent.h"
+#include "WorldModel.h"
+  #include <iostream>
+ #include <cstdlib>
  #include <stdio.h>
 #include <stdlib.h>
  #include <string>
-#include "Agent.h"
-#include "WorldModel.h"
 
 /**
  * Constructor.
@@ -115,11 +116,13 @@ void Agent::SaveActiveBehavior(const ActiveBehavior & beh)
 }
 
 void Agent::SetRecvdMsg(std::string strmsg){
+		SetResetVal(true);
 		std::cout<<"The agent "<< GetSelfUnum() <<" recvd msg - "<<strmsg<<std::endl;
 		unsigned pos = strmsg.find("X");
 		//std::cout<<"X is at "<<pos<<std::endl;
 		std::string sub = strmsg.substr(pos+1);
 		int value = atoi(sub.c_str());
+		SetTargetUnum(value);
 		std::cout<<"Target player is "<<value<<std::endl;
 		if(value==GetSelfUnum()){
 			std::cout<<"Player "<<GetSelfUnum()<<" setting follow ball"<<std::endl;
@@ -127,6 +130,10 @@ void Agent::SetRecvdMsg(std::string strmsg){
 		}
 		else
 			SetFollowBall(false);
+		if(strmsg.substr(0,3).compare("cus")==0){
+			std::string resend = "r"+strmsg;
+			while(!Say(resend));
+		}
 	}
 
 

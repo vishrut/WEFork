@@ -171,6 +171,7 @@ void Player::Run()
     			isPositioned = true;
     		}
     		if(mpAgent->GetSelfUnum() == 10){
+                mpAgent->SetFollowBall(true);
     			Vector player_pos = Vector(0.0, 1.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
@@ -204,7 +205,7 @@ void Player::Run()
                     std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - ball kickable"<<std::endl;
                     Vector nearestHole = RoundToNearestHole(myPosition);
                     if(PassPlayersAvailable()){
-                        std::cout <<"--------------------------------------------------------"<<std::endl;
+                        std::cout <<"-------------------------------------------------------"<<std::endl;
                         std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - pass players available"<<std::endl;
                         if(PassToBestPlayer())
                             mpAgent->SetFollowBall(false);
@@ -239,10 +240,20 @@ void Player::Run()
         
         
         else if(mpIntransit){
-            if(!AreSamePoints(myPosition, mpTarget, 0.3))
-                Dasher::instance().GoToPoint(*mpAgent, mpTarget, 0.3, 100, false, false);
-            else{
+            
+            if(mpAgent->GetResetVal()){
                 mpIntransit = false;
+                mpAgent->SetResetVal(false);
+                //mpAgent->GetTargetUnum();
+                DecideAndOccupyHole(mpAgent->GetTargetUnum());
+                return;
+            }
+            else{
+                if(!AreSamePoints(myPosition, mpTarget, 0.3))
+                    Dasher::instance().GoToPoint(*mpAgent, mpTarget, 0.3, 100, false, false);
+                else{
+                    mpIntransit = false;
+                }
             }
         }
         
