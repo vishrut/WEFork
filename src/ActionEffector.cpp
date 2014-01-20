@@ -108,7 +108,7 @@ ActionEffector::ActionEffector(Agent & agent):
 	mSynchSeeCount      = 0;
 	mChangePlayerTypeCount = 0;
 	mTargetUnum     = 10;
-
+	//mCenter			= -1;
 	mIsMutex        = false;
 	mIsReset		= false;
 	mIsTurn         = false;
@@ -164,6 +164,14 @@ bool ActionEffector::GetResetTransit(){
 }
 void ActionEffector::SetResetTransit(bool reset){
 	mIsReset = reset;
+}
+
+int ActionEffector::GetCenter(){
+	return mCenter;
+}
+
+void ActionEffector::SetCenter(int center){
+	mCenter = center;
 }
 
 int ActionEffector::GetTargetUnum(){
@@ -306,7 +314,7 @@ bool ActionEffector::SetSayAction(std::string msg)
 		return true;
 	}
 
-	//return false;
+	return false;
 }
 
 bool ActionEffector::SetAttentiontoAction(Unum num)

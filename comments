@@ -50,6 +50,17 @@ comments
                 mpClosestPlayer=8;
             */    
 
+            //Vector a = goalie_pos 
+            //Vector b = mpAgent->GetSelf().GetPos();
+            //double abangle = (a-b).Dir();
+            //double Kickanglez = abangle;
+            //if(Kickanglez>180)
+            //    Kickanglez = Kickanglez-360;
+            //if(Kickanglez<-180)
+            //    Kickanglez = Kickanglez+360;
+            //std::cout<<"Kickangle - "<< Kickanglez <<std::endl;
+            
+
                         
             //Vector a = target_pos 
             //Vector b = mpAgent->GetSelf().GetPos();

@@ -163,6 +163,9 @@ public:
 	
 	int GetTargetUnum(){return GetActionEffector().GetTargetUnum();}
 	void SetTargetUnum(int target){ GetActionEffector().SetTargetUnum(target);}
+
+	int GetCenter(){return GetActionEffector().GetCenter();}
+	void SetCenter(int center){ GetActionEffector().SetCenter(center);}
 	
 
 	bool Dash(double power, AngleDeg dir) { return GetActionEffector().SetDashAction(power, dir); }

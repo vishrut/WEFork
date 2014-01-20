@@ -120,23 +120,86 @@ void Player::Run()
     Vector myPosition = mpAgent->GetSelf().GetPos();
     double myDisToBall = mpCurrentPositionInfo.GetBallDistToPlayer(mpAgent->GetSelfUnum());
     Vector ballpos = mpAgent->GetWorldState().GetBall().GetPos();
-
-    if(mpCurrentPlayMode==PM_Before_Kick_Off){
+    std::string teamname = PlayerParam::instance().teamName();
+    if(mpCurrentPlayMode==PM_Before_Kick_Off||
+        mpCurrentPlayMode==PM_Opp_Kick_Off){
     	//TODO: Replace with an array + loop
-        //std::cout<<PlayerParam::instance().teamName()<<std::endl;
+        
+        if(teamname.substr(0,3)=="Opp"){
+            if(!isPositioned){
+            if(mpAgent->GetSelfUnum() == 1){
+                Vector player_pos = Vector(-45.0, 0.0);
+                mpAgent->Move(player_pos);
+                isPositioned = true;
+            }
+            if(mpAgent->GetSelfUnum() == 2){
+                Vector player_pos = Vector(-45.0, 10.0);
+                mpAgent->Move(player_pos);
+                isPositioned = true;
+            }
+            if(mpAgent->GetSelfUnum() == 3){
+                Vector player_pos = Vector(-45.0, -10.0);
+                mpAgent->Move(player_pos);
+                isPositioned = true;
+            }
+            if(mpAgent->GetSelfUnum() == 4){
+                Vector player_pos = Vector(-20.0, 0.0);
+                mpAgent->Move(player_pos);
+                isPositioned = true;
+            }
+            if(mpAgent->GetSelfUnum() == 5){
+                Vector player_pos = Vector(-20.0, -20.0);
+                mpAgent->Move(player_pos);
+                isPositioned = true;
+            }
+            if(mpAgent->GetSelfUnum() == 6){
+                Vector player_pos = Vector(-20.0, 20.0);
+                mpAgent->Move(player_pos);
+                isPositioned = true;
+            }
+            if(mpAgent->GetSelfUnum() == 7){
+                Vector player_pos = Vector(-10.0, -10.0);
+                mpAgent->Move(player_pos);
+                isPositioned = true;
+            }
+            if(mpAgent->GetSelfUnum() == 8){
+                Vector player_pos = Vector(-10.0, 10.0);
+                mpAgent->Move(player_pos);
+                isPositioned = true;
+            }
+            if(mpAgent->GetSelfUnum() == 9){
+                Vector player_pos = Vector(0.0, -20.0);
+                mpAgent->Move(player_pos);
+                isPositioned = true;
+            }
+            if(mpAgent->GetSelfUnum() == 10){
+                mpAgent->SetFollowBall(true);
+                Vector player_pos = Vector(0.0, 1.0);
+                mpAgent->Move(player_pos);
+                isPositioned = true;
+            }
+            if(mpAgent->GetSelfUnum() == 11){
+                Vector player_pos = Vector(0.0, 20.0);
+                mpAgent->Move(player_pos);
+                isPositioned = true;
+            }
+            std::cout << "Positioned" << std::endl;
+        }
+        }
+        else{
         if(!isPositioned){
     		if(mpAgent->GetSelfUnum() == 1){
-    			Vector player_pos = Vector(-45.0, 0.0);
+    			Vector player_pos = Vector(-40.0, 0.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
             }
     		if(mpAgent->GetSelfUnum() == 2){
-    			Vector player_pos = Vector(-45.0, 10.0);
+    			Vector player_pos = Vector(-30.0, 10.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
     		}
     		if(mpAgent->GetSelfUnum() == 3){
-    			Vector player_pos = Vector(-45.0, -10.0);
+    			Vector player_pos = Vector(-30.0, -10.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
     		}
@@ -156,12 +219,12 @@ void Player::Run()
     			isPositioned = true;
     		}
     		if(mpAgent->GetSelfUnum() == 7){
-    			Vector player_pos = Vector(-15.0, -15.0);
+    			Vector player_pos = Vector(-10.0, -10.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
     		}
     		if(mpAgent->GetSelfUnum() == 8){
-    			Vector player_pos = Vector(-15.0, 15.0);
+    			Vector player_pos = Vector(-10.0, 10.0);
     			mpAgent->Move(player_pos);
     			isPositioned = true;
     		}
@@ -184,24 +247,22 @@ void Player::Run()
             std::cout << "Positioned" << std::endl;
     	}
     }
+    }
 
-    else {
+    else if(teamname.substr(0,3)!="Opp"){
         if(mpAgent->GetFollowBall()){
-            if(mpCurrentPlayerState.IsKickable()){
-                /*
-                if(myPosition.X()>35){
-                    //TODO: Place shoot logic here
-                    std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - shooting ball"<<std::endl;
-                    ActiveBehavior beh = ActiveBehavior(*mpAgent, BT_Shoot);
-                    if (beh.GetType() != BT_None) {
-                        mpAgent->SetActiveBehaviorInAct(beh.GetType());
-                        if(beh.Execute())
-                            std::cout<<"shot successfully"<<std::endl;
-                        else
-                            std::cout<<"shot failed"<<std::endl;
-                    }
-                }*/
-                //else{
+            if(mpCurrentPlayerState.IsKickable()){        
+                if(myPosition.X()>30){
+                    Vector goalie = mpAgent->GetWorldState().GetOpponent(mpAgent->GetWorldState().GetOpponentGoalieUnum()).GetPos();
+                    Vector targeta = Vector(52.5, 4);
+                    Vector targetb = Vector(52.5, -4);
+                    Vector target;
+                    if(goalie.Y()>0)
+                        target = targetb;
+                    else target = targeta;
+                    Kicker::instance().KickBall(*mpAgent, target, ServerParam::instance().ballSpeedMax(), KM_Hard, 0, false);
+                }
+                else{
                     std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - ball kickable"<<std::endl;
                     Vector nearestHole = RoundToNearestHole(myPosition);
                     if(PassPlayersAvailable()){
@@ -217,7 +278,7 @@ void Player::Run()
                             mpAgent->SetActiveBehaviorInAct(beh.GetType());
                             if(beh.Execute());
                         }
-                    //}
+                    }
                 }
             }
             else
@@ -240,7 +301,7 @@ void Player::Run()
         
         
         else if(mpIntransit){
-            
+            /*
             if(mpAgent->GetResetVal()){
                 mpIntransit = false;
                 mpAgent->SetResetVal(false);
@@ -248,13 +309,15 @@ void Player::Run()
                 DecideAndOccupyHole(mpAgent->GetTargetUnum());
                 return;
             }
+            
             else{
+            */    
                 if(!AreSamePoints(myPosition, mpTarget, 0.3))
                     Dasher::instance().GoToPoint(*mpAgent, mpTarget, 0.3, 100, false, false);
                 else{
                     mpIntransit = false;
                 }
-            }
+            //}
         }
         
         else if(mpCurrentPlayerState.IsKickable()){
@@ -263,7 +326,7 @@ void Player::Run()
             std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - ball kickable"<<std::endl;
             Vector nearestHole = RoundToNearestHole(myPosition);
             if(PassPlayersAvailable()){
-                std::cout <<"--------------------------------------------------------"<<std::endl;
+                std::cout <<"---------------------------------------------------------"<<std::endl;
                 std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - pass players available"<<std::endl;
                 if(PassToBestPlayer())
                   mpAgent->SetFollowBall(false);

@@ -34,7 +34,7 @@ HOST="localhost"
 PORT="6000"
 VERSION="Debug"
 BINARY="WEBase"
-TEAM_NAME="WEBaseOpp"
+TEAM_NAME="OppWEBase"
 
 while getopts  "h:p:v:b:t:" flag; do
     case "$flag" in

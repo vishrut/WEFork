@@ -116,12 +116,26 @@ void Agent::SaveActiveBehavior(const ActiveBehavior & beh)
 }
 
 void Agent::SetRecvdMsg(std::string strmsg){
-		SetResetVal(true);
+		
 		std::cout<<"The agent "<< GetSelfUnum() <<" recvd msg - "<<strmsg<<std::endl;
 		unsigned pos = strmsg.find("X");
+		unsigned Ppos = strmsg.find("p");
+		unsigned len = pos - Ppos-1;
+		std::string sub0 = strmsg.substr(Ppos+1,len);
+		int passer = atoi(sub0.c_str());
 		//std::cout<<"X is at "<<pos<<std::endl;
 		std::string sub = strmsg.substr(pos+1);
 		int value = atoi(sub.c_str());
+		int passerX = GetWorldState().GetTeammate(passer).GetPos().X();
+		int passeeX = GetWorldState().GetTeammate(value).GetPos().X();
+		if(passeeX<=passerX){
+			SetCenter(passer);
+			std::cout<<"backpass detected"<<std::endl;
+		}
+		else{
+			SetCenter(-1);
+			SetResetVal(true);
+		}
 		SetTargetUnum(value);
 		std::cout<<"Target player is "<<value<<std::endl;
 		if(value==GetSelfUnum()){

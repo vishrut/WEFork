@@ -420,6 +420,9 @@ public:
 	int GetTargetUnum();
 	void SetTargetUnum(bool target);
 
+	int GetCenter();
+	void SetCenter(int center);
+
 	/**
 	 * Each of the following methods provides an interface to get the number of times a certain action
 	 * has been executed.
@@ -623,6 +626,7 @@ public:
 	bool		mIsReset;
 
 	int 		mTargetUnum;
+	int 		mCenter;
 
 	bool        mIsTurn;
 	bool        mIsDash;
