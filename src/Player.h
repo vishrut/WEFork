@@ -399,6 +399,20 @@ public:
         */
     }
 
+    Unum GetClosestTeammateTo(Vector target){
+        double mindis = 99999;
+        Unum mindisUnum = -1;
+        for(Unum i=1; i<=11; i++){
+            Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+            double dis = (player_pos.X()-target.X())*(player_pos.X()-target.X())+(player_pos.Y()-target.Y())*(player_pos.Y()-target.Y());
+            if(dis<mindis){
+                mindisUnum = i;
+                mindis=dis;
+            }
+        }
+        return mindisUnum;
+    }
+
     void DecideAndOccupyHole(Unum target){
         //Called when another teammate has the ball
         //Decide if the player should support the ballholder by moving to an appropriate hole or not

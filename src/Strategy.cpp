@@ -129,7 +129,7 @@ void Strategy::StrategyAnalyze()
 	SituationAnalyse();
 
     //And once they are over, roll back formation. Formation will be updated by BehaviorData when needed.
-    mFormation.Rollback("Strategy");
+    //mFormation.Rollback("Strategy");
 
 	if (mSelfState.GetTackleProb(false) < FLOAT_EPS) {
 		if ( mIsBallFree) {
@@ -335,8 +335,8 @@ void Strategy::BallPossessionAnalyse()
 		mChallenger = mInfoState.GetPositionInfo().GetOpponentWithBall();
 
 		if (!mSelfState.IsGoalie()) {
-			double self_pt_dis = mAgent.GetFormation().GetTeammateFormationPoint(self.GetUnum(), ball.GetPos()).Dist2(ball.GetPos());
-
+			double self_pt_dis = 10;
+			//hereo mAgent.GetFormation().GetTeammateFormationPoint(self.GetUnum(), ball.GetPos()).Dist2(ball.GetPos())
 			for(unsigned int i = 0; i < p2b.size(); ++i){
 				Unum unum = p2b[i];
 				if(unum > 0 && unum != self.GetUnum()){
@@ -346,7 +346,7 @@ void Strategy::BallPossessionAnalyse()
 							mController = unum;
 							break;
 						}
-						double tm_pt_dis = mAgent.GetFormation().GetTeammateFormationPoint(unum, ball.GetPos()).Dist2(ball.GetPos());
+						double tm_pt_dis = 10;//hereo mAgent.GetFormation().GetTeammateFormationPoint(unum, ball.GetPos()).Dist2(ball.GetPos())
 						if(tm_pt_dis < self_pt_dis){
 							mAgent.Self().UpdateKickable(false);
 							mController = unum;
@@ -404,7 +404,8 @@ void Strategy::SituationAnalyse()
 		if(!mIsBallFree){
 			if(mController >= 0){
 				if(mBallInterPos.X() < 32.0){
-					if(mInfoState.GetPositionInfo().GetTeammateOffsideLine() > 40.0 && mAgent.GetFormation().GetTeammateRoleType(mController).mLineType == LT_Midfielder && mBallInterPos.X() > 25.0){
+					if(mInfoState.GetPositionInfo().GetTeammateOffsideLine() > 40.0 && mBallInterPos.X() > 25.0){
+						//hereo && mAgent.GetFormation().GetTeammateRoleType(mController).mLineType == LT_Midfielder 
 						mSituation = ST_Penalty_Attack;
 					}
 					else {
@@ -422,7 +423,8 @@ void Strategy::SituationAnalyse()
 		else{
 			if(IsMyControl() || mSureTmInterCycle <= mSureOppInterCycle){
 				if(mBallInterPos.X() < 32.0 && mController > 0) {
-					if(mInfoState.GetPositionInfo().GetTeammateOffsideLine() > 40.0 && mAgent.GetFormation().GetTeammateRoleType(mController).mLineType == LT_Midfielder && mBallInterPos.X() > 25.0) {
+					if(mInfoState.GetPositionInfo().GetTeammateOffsideLine() > 40.0  && mBallInterPos.X() > 25.0) {
+						//hereo && mAgent.GetFormation().GetTeammateRoleType(mController).mLineType == LT_Midfielder
 						mSituation = ST_Penalty_Attack;
 					}
 					else {
@@ -439,7 +441,7 @@ void Strategy::SituationAnalyse()
 		}
 	}
 
-	mFormation.Update(Formation::Offensive, "Strategy");
+	//mFormation.Update(Formation::Offensive, "Strategy");
 }
 
 /**
@@ -451,24 +453,26 @@ void Strategy::SituationAnalyse()
  */
 Vector Strategy::GetTeammateSBSPPosition(Unum t,const Vector& ballpos)
 {
-	Vector position;
+	Vector position = Vector(0,0);
 
 	if (mController > 0 ||
         (mController == 0 && mBallInterPos.X() > 10.0))
     {
-		position = mAgent.GetFormation().GetTeammateFormationPoint(t, mController, ballpos);
+		//hereo position = mAgent.GetFormation().GetTeammateFormationPoint(t, mController, ballpos);
 	}
     else
     {
-        position = mAgent.GetFormation().GetTeammateFormationPoint(t);
+        //hereo position = mAgent.GetFormation().GetTeammateFormationPoint(t);
 	}
 
 	double x = Min(position.X(),
 			mInfoState.GetPositionInfo().GetTeammateOffsideLine() - PlayerParam::instance().AtPointBuffer());
-	if (mAgent.GetFormation().GetTeammateRoleType(t).mLineType==LT_Defender){		//后卫不过中场，便于回防
+	if (true){		//后卫不过中场，便于回防
+		//hereo mAgent.GetFormation().GetTeammateRoleType(t).mLineType==LT_Defender
 		position.SetX(Min(0.0,x));
 	}
-	else if (mAgent.GetFormation().GetTeammateRoleType(t).mLineType== LT_Forward){		//前锋不回场，便于进攻…………
+	else if (true){		//前锋不回场，便于进攻…………
+		//hereo mAgent.GetFormation().GetTeammateRoleType(t).mLineType== LT_Forward
 		position.SetX(Max( - 1.0,x));
 	}
 	else position.SetX(x);

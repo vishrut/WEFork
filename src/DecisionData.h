@@ -40,7 +40,6 @@ class WorldState;
 class BallState;
 class PlayerState;
 class InfoState;
-class Formation;
 
 class DecisionData: public Updatable {
 	DecisionData(const DecisionData &);
@@ -60,7 +59,6 @@ protected:
 	const PlayerState & mSelfState;
 
 	InfoState   & mInfoState;
-	Formation   & mFormation;
 };
 
 #endif /* DECISIONDATA_H_ */

@@ -112,8 +112,8 @@ void BehaviorSetplayPlanner::Plan(std::list<ActiveBehavior> & behavior_list)
 	if (mWorldState.GetPlayMode() != PM_Play_On) {
 		if (mWorldState.GetPlayMode() == PM_Before_Kick_Off) {
 			setplay.mDetailType = BDT_Setplay_Move;
-			setplay.mTarget = TeammateFormationTactic(KickOffPosition)(mSelfState.GetUnum(), mWorldState.GetKickOffMode() == KO_Ours);
-
+			//setplay.mTarget = TeammateFormationTactic(KickOffPosition)(mSelfState.GetUnum(), mWorldState.GetKickOffMode() == KO_Ours);
+			setplay.mTarget = mBallState.GetPos();
 			if (setplay.mTarget.Dist(mSelfState.GetPos()) < setplay.mBuffer) {
 				setplay.mDetailType = BDT_Setplay_Scan;
 			}

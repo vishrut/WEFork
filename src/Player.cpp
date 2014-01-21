@@ -266,7 +266,7 @@ void Player::Run()
                     std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - ball kickable"<<std::endl;
                     Vector nearestHole = RoundToNearestHole(myPosition);
                     if(PassPlayersAvailable()){
-                        std::cout <<"-------------------------------------------------------"<<std::endl;
+                        std::cout <<"--------------------------------------------------------"<<std::endl;
                         std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - pass players available"<<std::endl;
                         if(PassToBestPlayer())
                             mpAgent->SetFollowBall(false);

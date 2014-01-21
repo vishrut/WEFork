@@ -103,12 +103,14 @@ void BehaviorPositionPlanner::Plan(ActiveBehaviorList &behavior_list)
 	}
 	else position.mTarget = target;
 
-	if(mWorldState.GetPlayMode() == PM_Our_Goalie_Free_Kick  &&
-			mAgent.GetFormation().GetMyRole().mLineType == LT_Forward){
-		if(mAgent.GetFormation().GetMyRole().mPositionType ==PT_Left){
+	if(mWorldState.GetPlayMode() == PM_Our_Goalie_Free_Kick  ){
+		//hereo &&mAgent.GetFormation().GetMyRole().mLineType == LT_Forward
+		if(true){
+			//mAgent.GetFormation().GetMyRole().mPositionType ==PT_Left
 			position.mTarget.SetY(26);
 		}
-		if(mAgent.GetFormation().GetMyRole().mPositionType ==PT_Right){
+		if(true){
+			//mAgent.GetFormation().GetMyRole().mPositionType ==PT_Right
 			position.mTarget.SetY(-26);
 		}
 	}
@@ -122,10 +124,12 @@ void BehaviorPositionPlanner::Plan(ActiveBehaviorList &behavior_list)
 	if(mPositionInfo.GetOpponentOffsideLine() > mBallState.GetPos().X()){
 		position.mTarget.SetX(Min(target.X(),(mPositionInfo.GetOpponentOffsideLine())));
 	}
-	if(position.mTarget.X()> mSelfState.GetPos().X() && mAgent.GetFormation().GetMyRole().mLineType == LT_Forward){
+	if(position.mTarget.X()> mSelfState.GetPos().X()){
+		//hereo  && mAgent.GetFormation().GetMyRole().mLineType == LT_Forward
 	position.mPower = mSelfState.CorrectDashPowerForStamina(ServerParam::instance().maxDashPower());
 	}
-	else 	if(position.mTarget.X()< mSelfState.GetPos().X() && mAgent.GetFormation().GetMyRole().mLineType == LT_Defender){
+	else 	if(position.mTarget.X()< mSelfState.GetPos().X()){
+		// && mAgent.GetFormation().GetMyRole().mLineType == LT_Defender
 		position.mPower = mSelfState.CorrectDashPowerForStamina(ServerParam::instance().maxDashPower());
 	}
 	else position.mPower = mSelfState.CorrectDashPowerForStamina(ServerParam::instance().maxDashPower())/2;

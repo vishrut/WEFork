@@ -998,13 +998,13 @@ void Formation::Instance::SetTeammateFormations()
 
 /**
  * Get the Formation of the agent which represents this program.
- */
+ hereo
 Formation & Formation::Instance::operator ()()
 {
 	Assert(mpAgent);
 	return mpAgent->GetFormation();
 }
-
+*/
 void Formation::Instance::UpdateOpponentRole()
 {
 	if (!mpAgent) {
@@ -1015,6 +1015,8 @@ void Formation::Instance::UpdateOpponentRole()
 	const WorldState & world_state = mpAgent->GetWorldState();
 	const InfoState & info_state = mpAgent->GetInfoState();
 	const std::list<KeyPlayerInfo> & opp_list =	info_state.GetPositionInfo().GetXSortOpponent();
+	//hereo
+	/*
 	const FormationBase & teammate_formation = mpAgent->GetFormation().GetTeammateFormation();
 	if (opp_list.size() < TEAMSIZE || world_state.GetPlayMode() != PM_Play_On || world_state.CurrentTime() % 10 != 0)
 	{
@@ -1108,8 +1110,9 @@ void Formation::Instance::UpdateOpponentRole()
 			PRINT_ERROR("line type error");
 			break;
 		}
+		*/
 	}
-}
+
 
 void Formation::Instance::SetOpponentGoalieUnum(Unum goalie_unum)
 {

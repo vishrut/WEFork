@@ -259,7 +259,7 @@ void VisualSystem::DoInfoGather()
 	else {
 		if (strategy.IsBallFree()
 				&& strategy.GetController() != 0
-				&& mpAgent->GetFormation().GetTeammateRoleType(mpSelfState->GetUnum()).mLineType != LT_Defender
+				//hereo && mpAgent->GetFormation().GetTeammateRoleType(mpSelfState->GetUnum()).mLineType != LT_Defender
 				&& (strategy.GetBallFreeCycleLeft() > 3 || (strategy.IsMyControl() && strategy.GetMyInterCycle() > 3)))
 		{
 			DoInfoGatherForBallFree();
@@ -306,7 +306,7 @@ void VisualSystem::DoInfoGatherForBallFree()
 	std::vector<OrderedIT>::const_iterator it;
 	const std::vector<OrderedIT> & OIT = mpInfoState->GetInterceptInfo().GetOIT();
 
-	if (strategy.IsMyControl() && mpAgent->GetFormation().GetTeammateRoleType(mpSelfState->GetUnum()).mLineType != LT_Defender && ball_free_cyc_left < 6 && ball_free_cyc_left > 2){
+	if (strategy.IsMyControl() && /*hereo mpAgent->GetFormation().GetTeammateRoleType(mpSelfState->GetUnum()).mLineType != LT_Defender && */ball_free_cyc_left < 6 && ball_free_cyc_left > 2){
 		RaiseBall(1.0);
 	}
 	else{
@@ -339,6 +339,7 @@ void VisualSystem::DoInfoGatherForFastForward()
 	const Strategy & strategy = mpAgent->GetStrategy();
 
 	RaiseBall();
+	/*hereo
 	switch (mpAgent->GetFormation().GetTeammateRoleType(mpSelfState->GetUnum()).mLineType){
 	case LT_Defender:
 		for (Unum i = 1; i <= TEAMSIZE; ++i){
@@ -435,7 +436,7 @@ void VisualSystem::DoInfoGatherForFastForward()
 	default:
 		PRINT_ERROR("line type error");
 		break;
-	}
+	}*/
 }
 
 void VisualSystem::DoInfoGatherForPenaltyAttack()
@@ -443,6 +444,7 @@ void VisualSystem::DoInfoGatherForPenaltyAttack()
 	const Strategy & strategy = mpAgent->GetStrategy();
 
 	RaiseBall();
+	/*
 	switch (mpAgent->GetFormation().GetTeammateRoleType(mpSelfState->GetUnum()).mLineType){
 	case LT_Defender:
 		for (Unum i = 1; i <= TEAMSIZE; ++i){
@@ -511,6 +513,7 @@ void VisualSystem::DoInfoGatherForPenaltyAttack()
 		PRINT_ERROR("line type error");
 		break;
 	}
+	*/
 
 	//特殊视觉请求
 	if(ServerParam::instance().oppPenaltyArea().IsWithin(mPreSelfPos)
@@ -541,6 +544,7 @@ void VisualSystem::DoInfoGatherForDefense()
 	}
 
 	RaiseBall();
+	/*
 	switch (mpAgent->GetFormation().GetTeammateRoleType(mpSelfState->GetUnum()).mLineType){
 	case LT_Goalie:
 	case LT_Defender:
@@ -600,6 +604,7 @@ void VisualSystem::DoInfoGatherForDefense()
 		PRINT_ERROR("line type error");
 		break;
 	}
+	*/
 }
 
 void VisualSystem::DoInfoGatherForGoalie()
@@ -738,7 +743,7 @@ void VisualSystem::RaisePlayer(ObjectIndex unum, double eva)
 
 	PlayMode pm = mpWorldState->GetPlayMode();
 	if ( ((/*pm == PM_Our_Penalty_Setup ||*/ pm == PM_Our_Penalty_Ready || pm == PM_Our_Penalty_Taken) && mpWorldState->GetPlayer(unum).IsGoalie())
-			|| (-unum == mpInfoState->GetPositionInfo().GetTeammateOffsideLineOpp() && mpAgent->GetFormation().GetMyRole().mLineType == LT_Forward && eva <= mpWorldState->GetPlayer(unum).GetPosDelay())) {
+			|| (-unum == mpInfoState->GetPositionInfo().GetTeammateOffsideLineOpp() /*&& mpAgent->GetFormation().GetMyRole().mLineType == LT_Forward*/ && eva <= mpWorldState->GetPlayer(unum).GetPosDelay())) {
 		RaiseForgotObject(unum);
 	}
 }

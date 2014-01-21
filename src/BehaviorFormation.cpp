@@ -82,12 +82,14 @@ void BehaviorFormationPlanner::Plan(std::list<ActiveBehavior> & behavior_list)
 	formation.mBuffer = 1.0;
 	formation.mPower = mSelfState.CorrectDashPowerForStamina(ServerParam::instance().maxDashPower());
 	formation.mTarget = mAnalyser.mHome[mSelfState.GetUnum()];
-	if(formation.mTarget.X() < mSelfState.GetPos().X() && mAgent.GetFormation().GetMyRole().mLineType == LT_Forward){
+	if(formation.mTarget.X() < mSelfState.GetPos().X()){
+		// && mAgent.GetFormation().GetMyRole().mLineType == LT_Forward //hereo
 		formation.mPower = mSelfState.CorrectDashPowerForStamina(ServerParam::instance().maxDashPower())/2;
 	}
 
 
-	if(mAgent.GetFormation().GetMyRole().mLineType == LT_Defender){
+	if(true){
+		//mAgent.GetFormation().GetMyRole().mLineType == LT_Defender //hereo
 		formation.mTarget.SetX(Min(0.0,formation.mTarget.X()));
 		if(mBallState.GetPos().X() < -25){
 			Unum goalie = mWorldState.GetTeammateGoalieUnum();

@@ -38,9 +38,8 @@ DecisionData::DecisionData(Agent & agent):
 	mWorldState ( agent.World() ),
 	mBallState ( agent.World().Ball() ),
 	mSelfState ( agent.Self() ),
-	mInfoState ( agent.Info()),
-	mFormation ( agent.GetFormation())
-{
+	mInfoState ( agent.Info())
+	{
 }
 
 DecisionData::~DecisionData() {

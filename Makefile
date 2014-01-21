@@ -22,7 +22,7 @@
 DEBUG    = Debug
 RELEASE  = Release
 
-first: debug
+first: debug release
 
 all: debug release
 

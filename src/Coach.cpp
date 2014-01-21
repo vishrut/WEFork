@@ -74,7 +74,7 @@ void Coach::SendOptionToServer()
         if (i != PlayerParam::instance().ourGoalieUnum() && mpObserver->Teammate_Coach(i).IsAlive())
         {
         	mpAgent->CheckCommands(mpObserver);
-        	if(mpAgent->GetFormation().GetTeammateRoleType(i).mLineType==LT_Forward){
+        	if(true){
         		mpAgent->ChangePlayerType(i, a.back().first);
         		a.pop_back();
         	}
@@ -87,7 +87,7 @@ void Coach::SendOptionToServer()
         if (i != PlayerParam::instance().ourGoalieUnum() && mpObserver->Teammate_Coach(i).IsAlive())
         {
         	mpAgent->CheckCommands(mpObserver);
-        	if(mpAgent->GetFormation().GetTeammateRoleType(i).mLineType==LT_Defender){
+        	if(true){
         		mpAgent->ChangePlayerType(i, a.back().first);
         	a.pop_back();
         	}
@@ -115,7 +115,7 @@ void Coach::SendOptionToServer()
         if (i != PlayerParam::instance().ourGoalieUnum() && mpObserver->Teammate_Coach(i).IsAlive())
         {
             mpAgent->CheckCommands(mpObserver);
-        	if(mpAgent->GetFormation().GetPlayerRoleType(i).mLineType==LT_Midfielder){
+        	if(true){
         		mpAgent->ChangePlayerType(i, a.back().first);
         	a.pop_back();
     		}

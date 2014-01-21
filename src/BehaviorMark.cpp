@@ -88,7 +88,8 @@ void BehaviorMarkPlanner::Plan(std::list<ActiveBehavior> & behavior_list)
 		mark.mPower = mSelfState.CorrectDashPowerForStamina(ServerParam::instance().maxDashPower());
 		mark.mTarget = mWorldState.GetOpponent(closest_opp).GetPos()  + Polar2Vector(mark.mBuffer , b2o);
 		mark.mEvaluation = Evaluation::instance().EvaluatePosition(mark.mTarget, false);
-		if( mAgent.GetFormation().GetMyRole().mLineType == LT_Defender){
+		if( true){
+			//mAgent.GetFormation().GetMyRole().mLineType == LT_Defender //hereo
 			mark.mEvaluation = Evaluation::instance().EvaluatePosition(mark.mTarget, true);
 		}
 

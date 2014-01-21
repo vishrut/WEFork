@@ -549,7 +549,7 @@ public:
     	void AssignWith(Agent * agent);
     	void SetTeammateFormations();
 
-    	Formation & operator ()();
+    	//Formation & operator ()();
 
         /**
          * The following 2 methods return the static member directly.
