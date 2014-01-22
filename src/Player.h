@@ -52,6 +52,9 @@
 #include "Tackler.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <algorithm>    // std::sort
+#include <vector>       // std::vector
+ #include <functional>   // std::bind
 
 class DecisionTree;
 class  BeliefState;
@@ -286,125 +289,12 @@ public:
     }
 
 
-    void DecideAndOccupyHole(){
-    	//Called when another teammate has the ball
-    	//Decide if the player should support the ballholder by moving to an appropriate hole or not
-    	//Act as per the decision
-    	
-    	Vector BHPos;
-    	
-    	double buffer = 0.1;
-    	for(Unum i=1; i<=11; i++){
-    		if(mpAgent->GetWorldState().GetTeammate(i).IsKickable()&&(i!=mpAgent->GetSelfUnum())){
-    			BHPos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
-    			break;
-    		}
-    	}
-    	BHPos = RoundToNearestHole(BHPos);
-
-    	Vector BHfrontup = Vector(BHPos.X()+10, BHPos.Y()-10);
-    	Vector BHbackup = Vector(BHPos.X()-10, BHPos.Y()-10);
-    	Vector BHfrontdown = Vector(BHPos.X()+10, BHPos.Y()+10);
-    	Vector BHbackdown = Vector(BHPos.X()-10, BHPos.Y()+10);
-
-        Vector BHfronthor = Vector(BHPos.X()+20, BHPos.Y());
-        Vector BHbackhor = Vector(BHPos.X()-20, BHPos.Y());
-        Vector BHupvert = Vector(BHPos.X(), BHPos.Y()-20);
-        Vector BHdownvert = Vector(BHPos.X(), BHPos.Y()+20);
-    	//if frontup&frontdown not occupied (+ other conditions), move there
-    	//TODO: Currently, it is possible that one player is expected to fill both the holes
-
-        Unum FU, FD, BU, BD;
-        Unum FH, BH, UV, DV;
-
-        //&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25
-
-        FU = GetClosest(BHfrontup);
-        if(FU==mpAgent->GetSelfUnum()&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25){
-            OccupyHole(BHfrontup);
-            std::cout<<"Player "<<FU<<" occupying frontup"<<std::endl;
-        }
-
-        FD = GetClosestExcl1(BHfrontdown, FU);
-        if(FD==mpAgent->GetSelfUnum()&&BHfrontdown.X()>=-45&&BHfrontdown.X()<=45&&BHfrontdown.Y()>=-25&&BHfrontdown.Y()<=25){
-            OccupyHole(BHfrontdown);
-            std::cout<<"Player "<<FD<<" occupying frontdown"<<std::endl;
-        }
-
-        FH = GetClosestExcl2(BHfronthor, FU, FD);
-        if(FH==mpAgent->GetSelfUnum()&&BHfronthor.X()>=-45&&BHfronthor.X()<=45&&BHfronthor.Y()>=-25&&BHfronthor.Y()<=25){
-            OccupyHole(BHfronthor);
-            std::cout<<"Player "<<FH<<" occupying backdown"<<std::endl;
-        }
-
-        UV = GetClosestExcl3(BHupvert, FU, FD, FH);
-        if(UV==mpAgent->GetSelfUnum()&&BHupvert.X()>=-45&&BHupvert.X()<=45&&BHupvert.Y()>=-25&&BHupvert.Y()<=25){
-            OccupyHole(BHupvert);
-            std::cout<<"Player "<<UV<<" occupying backdown"<<std::endl;
-        }
-
-        DV = GetClosestExcl4(BHdownvert, FU, FD, FH, UV);
-        if(DV==mpAgent->GetSelfUnum()&&BHdownvert.X()>=-45&&BHdownvert.X()<=45&&BHdownvert.Y()>=-25&&BHdownvert.Y()<=25){
-            OccupyHole(BHdownvert);
-            std::cout<<"Player "<<DV<<" occupying backdown"<<std::endl;
-        }
-
-        BU = GetClosestExcl5(BHbackup, FU, FD, FH, UV, DV);
-        if(BU==mpAgent->GetSelfUnum()&&BHbackup.X()>=-45&&BHbackup.X()<=45&&BHbackup.Y()>=-25&&BHbackup.Y()<=25){
-            OccupyHole(BHbackup);
-            std::cout<<"Player "<<BU<<" occupying backup"<<std::endl;
-        }
-        
-        BD = GetClosestExcl6(BHbackdown, FU, FD, FH, UV, DV, BU);
-        if(BD==mpAgent->GetSelfUnum()&&BHbackdown.X()>=-45&&BHbackdown.X()<=45&&BHbackdown.Y()>=-25&&BHbackdown.Y()<=25){
-            OccupyHole(BHbackdown);
-            std::cout<<"Player "<<BD<<" occupying backdown"<<std::endl;
-        }
-
-
-        BH = GetClosestExcl7(BHbackhor, FU, FD, FH, UV, DV, BU, BD);
-        if(BH==mpAgent->GetSelfUnum()&&BHbackhor.X()>=-45&&BHbackhor.X()<=45&&BHbackhor.Y()>=-25&&BHbackhor.Y()<=25){
-            OccupyHole(BHbackhor);
-            std::cout<<"Player "<<BH<<" occupying backdown"<<std::endl;
-        }
-
-
-
-        /*
-    	if(!IsOccupied(BHfrontup)||!IsOccupied(BHfrontdown)){
-    		//&&mpAgent->GetSelfUnum()!=10
-    		//if closest to frontup/frontdown, occupy it
-    		if(IsClosest(BHfrontup)&&!IsOccupied(BHfrontup)){
-                OccupyHole(RoundToNearestHole(BHfrontup));
-                return;
-            }
-    		else if(IsClosest(BHfrontdown)&&!IsOccupied(BHfrontdown)){
-    			OccupyHole(RoundToNearestHole(BHfrontdown));
-                return;
-            }
-    	}
-    	
-        if(!IsOccupied(BHbackup)||!IsOccupied(BHbackdown)){
-            //&&mpAgent->GetSelfUnum()==10    
-    		//if closest to frontup/frontdown, occupy it
-    		if(IsClosest(BHbackup)&&!IsOccupied(BHbackup)){
-    			OccupyHole(RoundToNearestHole(BHbackup));
-                return;
-            }
-    		else if(IsClosest(BHbackdown)&&!IsOccupied(BHbackdown)){
-    			OccupyHole(RoundToNearestHole(BHbackdown));
-                return;
-            }
-    	}
-        */
-    }
-
     Unum GetClosestTeammateTo(Vector target){
         double mindis = 99999;
         Unum mindisUnum = -1;
         for(Unum i=1; i<=11; i++){
             Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
-            double dis = (player_pos.X()-target.X())*(player_pos.X()-target.X())+(player_pos.Y()-target.Y())*(player_pos.Y()-target.Y());
+            double dis = player_pos.Dist(target);
             if(dis<mindis){
                 mindisUnum = i;
                 mindis=dis;
@@ -414,15 +304,20 @@ public:
     }
 
     void DecideAndOccupyHole(Unum target){
-        //Called when another teammate has the ball
-        //Decide if the player should support the ballholder by moving to an appropriate hole or not
-        //Act as per the decision
+        //Called when another teammate would have the ball
+        //target == -1 means a player already has the ball
         
         Vector BHPos;
-        
-        double buffer = 0.3;
-        
-        if(target!=mpAgent->GetSelfUnum()){
+                
+        if(target==-1){
+            for(Unum i=1; i<=11; i++){
+                if(mpAgent->GetWorldState().GetTeammate(i).IsKickable()&&(i!=mpAgent->GetSelfUnum())){
+                    BHPos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+                    break;
+                }
+            }
+        }
+        else if(target!=mpAgent->GetSelfUnum()){
             BHPos = mpAgent->GetWorldState().GetTeammate(target).GetPos();
         }
         else
@@ -439,8 +334,6 @@ public:
         Vector BHbackhor = Vector(BHPos.X()-20, BHPos.Y());
         Vector BHupvert = Vector(BHPos.X(), BHPos.Y()-20);
         Vector BHdownvert = Vector(BHPos.X(), BHPos.Y()+20);
-        //if frontup&frontdown not occupied (+ other conditions), move there
-        //TODO: Currently, it is possible that one player is expected to fill both the holes
 
         Unum FU, FD, BU, BD;
         Unum FH, BH, UV, DV;
@@ -451,79 +344,89 @@ public:
         if(FU==mpAgent->GetSelfUnum()&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25){
             OccupyHole(BHfrontup);
             std::cout<<"Player "<<FU<<" occupying frontup"<<std::endl;
+            return;
         }
 
         FD = GetClosestExcl1(BHfrontdown, FU);
         if(FD==mpAgent->GetSelfUnum()&&BHfrontdown.X()>=-45&&BHfrontdown.X()<=45&&BHfrontdown.Y()>=-25&&BHfrontdown.Y()<=25){
             OccupyHole(BHfrontdown);
             std::cout<<"Player "<<FD<<" occupying frontdown"<<std::endl;
+            return;
         }
 
         FH = GetClosestExcl2(BHfronthor, FU, FD);
         if(FH==mpAgent->GetSelfUnum()&&BHfronthor.X()>=-45&&BHfronthor.X()<=45&&BHfronthor.Y()>=-25&&BHfronthor.Y()<=25){
             OccupyHole(BHfronthor);
-            std::cout<<"Player "<<FH<<" occupying backdown"<<std::endl;
+            std::cout<<"Player "<<FH<<" occupying fronthor"<<std::endl;
+            return;
         }
 
         UV = GetClosestExcl3(BHupvert, FU, FD, FH);
         if(UV==mpAgent->GetSelfUnum()&&BHupvert.X()>=-45&&BHupvert.X()<=45&&BHupvert.Y()>=-25&&BHupvert.Y()<=25){
             OccupyHole(BHupvert);
-            std::cout<<"Player "<<UV<<" occupying backdown"<<std::endl;
+            std::cout<<"Player "<<UV<<" occupying upvert"<<std::endl;
+            return;
         }
 
         DV = GetClosestExcl4(BHdownvert, FU, FD, FH, UV);
         if(DV==mpAgent->GetSelfUnum()&&BHdownvert.X()>=-45&&BHdownvert.X()<=45&&BHdownvert.Y()>=-25&&BHdownvert.Y()<=25){
             OccupyHole(BHdownvert);
-            std::cout<<"Player "<<DV<<" occupying backdown"<<std::endl;
+            std::cout<<"Player "<<DV<<" occupying downvert"<<std::endl;
+            return;
         }
 
         BU = GetClosestExcl5(BHbackup, FU, FD, FH, UV, DV);
         if(BU==mpAgent->GetSelfUnum()&&BHbackup.X()>=-45&&BHbackup.X()<=45&&BHbackup.Y()>=-25&&BHbackup.Y()<=25){
             OccupyHole(BHbackup);
             std::cout<<"Player "<<BU<<" occupying backup"<<std::endl;
+            return;
         }
         
         BD = GetClosestExcl6(BHbackdown, FU, FD, FH, UV, DV, BU);
         if(BD==mpAgent->GetSelfUnum()&&BHbackdown.X()>=-45&&BHbackdown.X()<=45&&BHbackdown.Y()>=-25&&BHbackdown.Y()<=25){
             OccupyHole(BHbackdown);
             std::cout<<"Player "<<BD<<" occupying backdown"<<std::endl;
+            return;
         }
-
 
         BH = GetClosestExcl7(BHbackhor, FU, FD, FH, UV, DV, BU, BD);
         if(BH==mpAgent->GetSelfUnum()&&BHbackhor.X()>=-45&&BHbackhor.X()<=45&&BHbackhor.Y()>=-25&&BHbackhor.Y()<=25){
             OccupyHole(BHbackhor);
-            std::cout<<"Player "<<BH<<" occupying backdown"<<std::endl;
-        }
-
-
-
-        /*
-        if(!IsOccupied(BHfrontup)||!IsOccupied(BHfrontdown)){
-            //&&mpAgent->GetSelfUnum()!=10
-            //if closest to frontup/frontdown, occupy it
-            if(IsClosest(BHfrontup)&&!IsOccupied(BHfrontup)){
-                OccupyHole(RoundToNearestHole(BHfrontup));
-                return;
-            }
-            else if(IsClosest(BHfrontdown)&&!IsOccupied(BHfrontdown)){
-                OccupyHole(RoundToNearestHole(BHfrontdown));
-                return;
-            }
+            std::cout<<"Player "<<BH<<" occupying backhor"<<std::endl;
+            return;
         }
         
-        if(!IsOccupied(BHbackup)||!IsOccupied(BHbackdown)){
-            //&&mpAgent->GetSelfUnum()==10    
-            //if closest to frontup/frontdown, occupy it
-            if(IsClosest(BHbackup)&&!IsOccupied(BHbackup)){
-                OccupyHole(RoundToNearestHole(BHbackup));
-                return;
-            }
-            else if(IsClosest(BHbackdown)&&!IsOccupied(BHbackdown)){
-                OccupyHole(RoundToNearestHole(BHbackdown));
-                return;
+        /*
+        std::vector<Vector> holes;
+        holes.push_back(BHfrontup);
+        holes.push_back(BHbackup);
+        holes.push_back(BHfrontdown);
+        holes.push_back(BHbackdown);
+        holes.push_back(BHfronthor);
+        holes.push_back(BHbackhor);
+        holes.push_back(BHupvert);
+        holes.push_back(BHdownvert);
+
+        Vector targethole;
+        double mindis = 999999;
+        Vector myPos = mpAgent->GetSelf().GetPos();
+
+        for(int i=0; i<8; i++){
+            double dis = myPos.Dist(holes[i]);
+            if(dis<mindis){
+                mindis = dis;
+                targethole = holes[i];
             }
         }
+
+        OccupyHole(targethole);
+        */
+
+        //if frontup&frontdown not occupied (+ other conditions), move there
+        //TODO: Currently, it is possible that one player is expected to fill both the holes
+
+        /*
+        
         */
     }
 
@@ -572,7 +475,7 @@ public:
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     		if(AreSamePoints(player_pos, frontup, buffer)){
-                std::string msgstr = "cusp";
+                std::string msgstr = "cus";
                 Unum mynum = mpAgent->GetSelfUnum();
                 std::string result;
                 std::stringstream sstm;
@@ -587,7 +490,7 @@ public:
     	for(Unum i=1; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     		if(AreSamePoints(player_pos, frontdown, buffer)){
-                std::string msgstr = "cusp";
+                std::string msgstr = "cus";
                 Unum mynum = mpAgent->GetSelfUnum();
                 std::string result;
                 std::stringstream sstm;
@@ -602,7 +505,7 @@ public:
         for(Unum i=1; i<=11; i++){
             Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
             if(AreSamePoints(player_pos, fronthor, buffer)){
-                std::string msgstr = "cusp";
+                std::string msgstr = "cus";
                 Unum mynum = mpAgent->GetSelfUnum();
                 std::string result;
                 std::stringstream sstm;
@@ -617,7 +520,7 @@ public:
         for(Unum i=1; i<=11; i++){
             Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
             if(AreSamePoints(player_pos, upvert, buffer)){
-                std::string msgstr = "cusp";
+                std::string msgstr = "cus";
                 Unum mynum = mpAgent->GetSelfUnum();
                 std::string result;
                 std::stringstream sstm;
@@ -632,7 +535,7 @@ public:
         for(Unum i=1; i<=11; i++){
             Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
             if(AreSamePoints(player_pos, downvert, buffer)){
-                std::string msgstr = "cusp";
+                std::string msgstr = "cus";
                 Unum mynum = mpAgent->GetSelfUnum();
                 std::string result;
                 std::stringstream sstm;
@@ -647,7 +550,7 @@ public:
         for(Unum i=1; i<=11; i++){
             Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
             if(AreSamePoints(player_pos, backhor, buffer)){
-                std::string msgstr = "cusp";
+                std::string msgstr = "cus";
                 Unum mynum = mpAgent->GetSelfUnum();
                 std::string result;
                 std::stringstream sstm;
@@ -662,7 +565,7 @@ public:
         for(Unum i=1; i<=11; i++){
             Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
             if(AreSamePoints(player_pos, backup, buffer)){
-                std::string msgstr = "cusp";
+                std::string msgstr = "cus";
                 Unum mynum = mpAgent->GetSelfUnum();
                 std::string result;
                 std::stringstream sstm;
@@ -677,7 +580,7 @@ public:
         for(Unum i=1; i<=11; i++){
             Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
             if(AreSamePoints(player_pos, backdown, buffer)){
-                std::string msgstr = "cusp";
+                std::string msgstr = "cus";
                 Unum mynum = mpAgent->GetSelfUnum();
                 std::string result;
                 std::stringstream sstm;

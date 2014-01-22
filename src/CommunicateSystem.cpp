@@ -541,7 +541,7 @@ void CommunicateSystem::ParseReceivedTeammateMsg(unsigned char *msg)
 	
 	std::string msgstr;
 	msgstr.append(reinterpret_cast<const char*>(msg));
-	if(msgstr.substr(0,3).compare("cus")==0||msgstr.substr(0,3).compare("rcus")==0){
+	if(msgstr.substr(0,3).compare("cus")==0||msgstr.substr(0,3).compare("rcu")==0){
 		mpAgent->SetRecvdMsg(msgstr);
 	}
 

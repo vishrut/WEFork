@@ -146,6 +146,7 @@ void Agent::SetRecvdMsg(std::string strmsg){
 			SetFollowBall(false);
 		if(strmsg.substr(0,3).compare("cus")==0){
 			std::string resend = "r"+strmsg;
+			std::cout<<resend<<std::endl;
 			while(!Say(resend));
 		}
 	}

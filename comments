@@ -1,4 +1,205 @@
 comments
+ void DecideAndOccupyHole(){
+        //Called when another teammate has the ball
+        //Decide if the player should support the ballholder by moving to an appropriate hole or not
+        //Act as per the decision
+        
+        Vector BHPos;
+        
+        double buffer = 0.1;
+        for(Unum i=1; i<=11; i++){
+            if(mpAgent->GetWorldState().GetTeammate(i).IsKickable()&&(i!=mpAgent->GetSelfUnum())){
+                BHPos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+                break;
+            }
+        }
+        BHPos = RoundToNearestHole(BHPos);
+
+        Vector BHfrontup = Vector(BHPos.X()+10, BHPos.Y()-10);
+        Vector BHbackup = Vector(BHPos.X()-10, BHPos.Y()-10);
+        Vector BHfrontdown = Vector(BHPos.X()+10, BHPos.Y()+10);
+        Vector BHbackdown = Vector(BHPos.X()-10, BHPos.Y()+10);
+
+        Vector BHfronthor = Vector(BHPos.X()+20, BHPos.Y());
+        Vector BHbackhor = Vector(BHPos.X()-20, BHPos.Y());
+        Vector BHupvert = Vector(BHPos.X(), BHPos.Y()-20);
+        Vector BHdownvert = Vector(BHPos.X(), BHPos.Y()+20);
+        //if frontup&frontdown not occupied (+ other conditions), move there
+        //TODO: Currently, it is possible that one player is expected to fill both the holes
+
+        Unum FU, FD, BU, BD;
+        Unum FH, BH, UV, DV;
+
+        //&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25
+
+        FU = GetClosest(BHfrontup);
+        if(FU==mpAgent->GetSelfUnum()&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25){
+            OccupyHole(BHfrontup);
+            std::cout<<"Player "<<FU<<" occupying frontup"<<std::endl;
+        }
+
+        FD = GetClosestExcl1(BHfrontdown, FU);
+        if(FD==mpAgent->GetSelfUnum()&&BHfrontdown.X()>=-45&&BHfrontdown.X()<=45&&BHfrontdown.Y()>=-25&&BHfrontdown.Y()<=25){
+            OccupyHole(BHfrontdown);
+            std::cout<<"Player "<<FD<<" occupying frontdown"<<std::endl;
+        }
+
+        FH = GetClosestExcl2(BHfronthor, FU, FD);
+        if(FH==mpAgent->GetSelfUnum()&&BHfronthor.X()>=-45&&BHfronthor.X()<=45&&BHfronthor.Y()>=-25&&BHfronthor.Y()<=25){
+            OccupyHole(BHfronthor);
+            std::cout<<"Player "<<FH<<" occupying backdown"<<std::endl;
+        }
+
+        UV = GetClosestExcl3(BHupvert, FU, FD, FH);
+        if(UV==mpAgent->GetSelfUnum()&&BHupvert.X()>=-45&&BHupvert.X()<=45&&BHupvert.Y()>=-25&&BHupvert.Y()<=25){
+            OccupyHole(BHupvert);
+            std::cout<<"Player "<<UV<<" occupying backdown"<<std::endl;
+        }
+
+        DV = GetClosestExcl4(BHdownvert, FU, FD, FH, UV);
+        if(DV==mpAgent->GetSelfUnum()&&BHdownvert.X()>=-45&&BHdownvert.X()<=45&&BHdownvert.Y()>=-25&&BHdownvert.Y()<=25){
+            OccupyHole(BHdownvert);
+            std::cout<<"Player "<<DV<<" occupying backdown"<<std::endl;
+        }
+
+        BU = GetClosestExcl5(BHbackup, FU, FD, FH, UV, DV);
+        if(BU==mpAgent->GetSelfUnum()&&BHbackup.X()>=-45&&BHbackup.X()<=45&&BHbackup.Y()>=-25&&BHbackup.Y()<=25){
+            OccupyHole(BHbackup);
+            std::cout<<"Player "<<BU<<" occupying backup"<<std::endl;
+        }
+        
+        BD = GetClosestExcl6(BHbackdown, FU, FD, FH, UV, DV, BU);
+        if(BD==mpAgent->GetSelfUnum()&&BHbackdown.X()>=-45&&BHbackdown.X()<=45&&BHbackdown.Y()>=-25&&BHbackdown.Y()<=25){
+            OccupyHole(BHbackdown);
+            std::cout<<"Player "<<BD<<" occupying backdown"<<std::endl;
+        }
+
+
+        BH = GetClosestExcl7(BHbackhor, FU, FD, FH, UV, DV, BU, BD);
+        if(BH==mpAgent->GetSelfUnum()&&BHbackhor.X()>=-45&&BHbackhor.X()<=45&&BHbackhor.Y()>=-25&&BHbackhor.Y()<=25){
+            OccupyHole(BHbackhor);
+            std::cout<<"Player "<<BH<<" occupying backdown"<<std::endl;
+        }
+
+
+    }
+
+
+    void DecideAndOccupyHole(Unum target){
+        //Called when another teammate has the ball
+        //Decide if the player should support the ballholder by moving to an appropriate hole or not
+        //Act as per the decision
+        
+        Vector BHPos;
+        
+        double buffer = 0.3;
+        
+        if(target!=mpAgent->GetSelfUnum()){
+            BHPos = mpAgent->GetWorldState().GetTeammate(target).GetPos();
+        }
+        else
+            return;
+        
+        BHPos = RoundToNearestHole(BHPos);
+
+        Vector BHfrontup = Vector(BHPos.X()+10, BHPos.Y()-10);
+        Vector BHbackup = Vector(BHPos.X()-10, BHPos.Y()-10);
+        Vector BHfrontdown = Vector(BHPos.X()+10, BHPos.Y()+10);
+        Vector BHbackdown = Vector(BHPos.X()-10, BHPos.Y()+10);
+
+        Vector BHfronthor = Vector(BHPos.X()+20, BHPos.Y());
+        Vector BHbackhor = Vector(BHPos.X()-20, BHPos.Y());
+        Vector BHupvert = Vector(BHPos.X(), BHPos.Y()-20);
+        Vector BHdownvert = Vector(BHPos.X(), BHPos.Y()+20);
+        //if frontup&frontdown not occupied (+ other conditions), move there
+        //TODO: Currently, it is possible that one player is expected to fill both the holes
+
+        Unum FU, FD, BU, BD;
+        Unum FH, BH, UV, DV;
+
+        //&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25
+
+        FU = GetClosest(BHfrontup);
+        if(FU==mpAgent->GetSelfUnum()&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25){
+            OccupyHole(BHfrontup);
+            std::cout<<"Player "<<FU<<" occupying frontup"<<std::endl;
+        }
+
+        FD = GetClosestExcl1(BHfrontdown, FU);
+        if(FD==mpAgent->GetSelfUnum()&&BHfrontdown.X()>=-45&&BHfrontdown.X()<=45&&BHfrontdown.Y()>=-25&&BHfrontdown.Y()<=25){
+            OccupyHole(BHfrontdown);
+            std::cout<<"Player "<<FD<<" occupying frontdown"<<std::endl;
+        }
+
+        FH = GetClosestExcl2(BHfronthor, FU, FD);
+        if(FH==mpAgent->GetSelfUnum()&&BHfronthor.X()>=-45&&BHfronthor.X()<=45&&BHfronthor.Y()>=-25&&BHfronthor.Y()<=25){
+            OccupyHole(BHfronthor);
+            std::cout<<"Player "<<FH<<" occupying backdown"<<std::endl;
+        }
+
+        UV = GetClosestExcl3(BHupvert, FU, FD, FH);
+        if(UV==mpAgent->GetSelfUnum()&&BHupvert.X()>=-45&&BHupvert.X()<=45&&BHupvert.Y()>=-25&&BHupvert.Y()<=25){
+            OccupyHole(BHupvert);
+            std::cout<<"Player "<<UV<<" occupying backdown"<<std::endl;
+        }
+
+        DV = GetClosestExcl4(BHdownvert, FU, FD, FH, UV);
+        if(DV==mpAgent->GetSelfUnum()&&BHdownvert.X()>=-45&&BHdownvert.X()<=45&&BHdownvert.Y()>=-25&&BHdownvert.Y()<=25){
+            OccupyHole(BHdownvert);
+            std::cout<<"Player "<<DV<<" occupying backdown"<<std::endl;
+        }
+
+        BU = GetClosestExcl5(BHbackup, FU, FD, FH, UV, DV);
+        if(BU==mpAgent->GetSelfUnum()&&BHbackup.X()>=-45&&BHbackup.X()<=45&&BHbackup.Y()>=-25&&BHbackup.Y()<=25){
+            OccupyHole(BHbackup);
+            std::cout<<"Player "<<BU<<" occupying backup"<<std::endl;
+        }
+        
+        BD = GetClosestExcl6(BHbackdown, FU, FD, FH, UV, DV, BU);
+        if(BD==mpAgent->GetSelfUnum()&&BHbackdown.X()>=-45&&BHbackdown.X()<=45&&BHbackdown.Y()>=-25&&BHbackdown.Y()<=25){
+            OccupyHole(BHbackdown);
+            std::cout<<"Player "<<BD<<" occupying backdown"<<std::endl;
+        }
+
+
+        BH = GetClosestExcl7(BHbackhor, FU, FD, FH, UV, DV, BU, BD);
+        if(BH==mpAgent->GetSelfUnum()&&BHbackhor.X()>=-45&&BHbackhor.X()<=45&&BHbackhor.Y()>=-25&&BHbackhor.Y()<=25){
+            OccupyHole(BHbackhor);
+            std::cout<<"Player "<<BH<<" occupying backdown"<<std::endl;
+        }
+    }
+
+
+
+
+
+        /*
+        if(!IsOccupied(BHfrontup)||!IsOccupied(BHfrontdown)){
+            //&&mpAgent->GetSelfUnum()!=10
+            //if closest to frontup/frontdown, occupy it
+            if(IsClosest(BHfrontup)&&!IsOccupied(BHfrontup)){
+                OccupyHole(RoundToNearestHole(BHfrontup));
+                return;
+            }
+            else if(IsClosest(BHfrontdown)&&!IsOccupied(BHfrontdown)){
+                OccupyHole(RoundToNearestHole(BHfrontdown));
+                return;
+            }
+        }
+        
+        if(!IsOccupied(BHbackup)||!IsOccupied(BHbackdown)){
+            //&&mpAgent->GetSelfUnum()==10    
+            //if closest to frontup/frontdown, occupy it
+            if(IsClosest(BHbackup)&&!IsOccupied(BHbackup)){
+                OccupyHole(RoundToNearestHole(BHbackup));
+                return;
+            }
+            else if(IsClosest(BHbackdown)&&!IsOccupied(BHbackdown)){
+                OccupyHole(RoundToNearestHole(BHbackdown));
+                return;
+            }
+        }
+        */
             /*
             if(mpAgent->GetSelfUnum()!=10){
                 ActiveBehavior beh = ActiveBehavior(*mpAgent, BT_Hold);

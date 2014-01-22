@@ -278,14 +278,16 @@ bool ActionEffector::SetSayAction(std::string msg)
 	//std::cout<<"###############################################"<<std::endl;
 	if (mIsSay == true)
 	{
-		std::cout<<"mIsSay true *****************************************"<<std::endl;
+		//std::cout<<"mIsSay true *****************************************"<<std::endl;
+		/*
 		if(msg.substr(0,3).compare("cus")==0||msg.substr(0,3).compare("rcu")==0){
 			mSay.Plan(msg);
 			mSay.Execute(mCommandQueue);
 			++mSayCount;
-			mIsSay = true;
-			return true;
+			//mIsSay = true;
+			return false;
 		}
+		*/
 		return false;
 	}
 
@@ -307,6 +309,7 @@ bool ActionEffector::SetSayAction(std::string msg)
     }
     //std::cout<<"sending message"<<std::endl;
     if(msg.substr(0,3).compare("cus")==0||msg.substr(0,3).compare("rcu")==0){
+    	std::cout<<"about to say - "<<msg<<std::endl;
 		mSay.Plan(msg);
 		mSay.Execute(mCommandQueue);
 		++mSayCount;
