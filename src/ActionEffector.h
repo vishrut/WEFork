@@ -418,7 +418,7 @@ public:
 	void SetResetTransit(bool reset);
 
 	int GetTargetUnum();
-	void SetTargetUnum(bool target);
+	void SetTargetUnum(int target);
 
 	int GetCenter();
 	void SetCenter(int center);

@@ -126,6 +126,7 @@ void Agent::SetRecvdMsg(std::string strmsg){
 		//std::cout<<"X is at "<<pos<<std::endl;
 		std::string sub = strmsg.substr(pos+1);
 		int value = atoi(sub.c_str());
+		/*
 		int passerX = GetWorldState().GetTeammate(passer).GetPos().X();
 		int passeeX = GetWorldState().GetTeammate(value).GetPos().X();
 		if(passeeX<=passerX){
@@ -136,19 +137,24 @@ void Agent::SetRecvdMsg(std::string strmsg){
 			SetCenter(-1);
 			SetResetVal(true);
 		}
+		*/
+		SetResetVal(true);
+		//std::cout<<"Player - "<<GetSelfUnum()<<" setting holes to unum "<<value<<std::endl;
 		SetTargetUnum(value);
-		std::cout<<"Target player is "<<value<<std::endl;
+		//std::cout<<"Target player is "<<value<<std::endl;
 		if(value==GetSelfUnum()){
-			std::cout<<"Player "<<GetSelfUnum()<<" setting follow ball"<<std::endl;
+			//std::cout<<"Player "<<GetSelfUnum()<<" setting follow ball"<<std::endl;
 			SetFollowBall(true);
 		}
 		else
 			SetFollowBall(false);
+		/*
 		if(strmsg.substr(0,3).compare("cus")==0){
 			std::string resend = "r"+strmsg;
 			std::cout<<resend<<std::endl;
 			while(!Say(resend));
 		}
+		*/
 	}
 
 

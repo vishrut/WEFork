@@ -177,7 +177,7 @@ void ActionEffector::SetCenter(int center){
 int ActionEffector::GetTargetUnum(){
 	return mTargetUnum;
 }
-void ActionEffector::SetTargetUnum(bool target){
+void ActionEffector::SetTargetUnum(int target){
 	mTargetUnum = target;
 }
 
@@ -308,7 +308,7 @@ bool ActionEffector::SetSayAction(std::string msg)
         }
     }
     //std::cout<<"sending message"<<std::endl;
-    if(msg.substr(0,3).compare("cus")==0||msg.substr(0,3).compare("rcu")==0){
+    if(msg.substr(0,3).compare("cus")==0){
     	std::cout<<"about to say - "<<msg<<std::endl;
 		mSay.Plan(msg);
 		mSay.Execute(mCommandQueue);
@@ -1071,8 +1071,8 @@ void ActionEffector::CheckCommands(Observer *observer)
 	{
 		if (observer->Sense().GetMoveCount() < mMoveCount)
 		{
-			std::cout << observer->CurrentTime() << " " << PlayerParam::instance().teamName()
-			<< " " << observer->SelfUnum() << " miss a move" << std::endl;
+			//std::cout << observer->CurrentTime() << " " << PlayerParam::instance().teamName()
+			//<< " " << observer->SelfUnum() << " miss a move" << std::endl;
 		}
 		mMoveCount = observer->Sense().GetMoveCount();
 	}
