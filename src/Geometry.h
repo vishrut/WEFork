@@ -67,6 +67,10 @@ public:
 	}
 
 	Vector operator-() const { return Vector(-mX, -mY); }
+	bool operator <(const Vector& rhs) const
+    {
+        return mX < rhs.mX;
+    }
 	Vector operator+(const Vector &a) const { return Vector(mX + a.mX, mY + a.mY); }
 	Vector operator-(const Vector &a) const { return Vector(mX - a.mX, mY - a.mY); }
 	Vector operator*(const double & a) const { return Vector(mX * a, mY * a); }

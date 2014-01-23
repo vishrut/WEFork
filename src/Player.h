@@ -55,6 +55,8 @@
 #include <algorithm>    // std::sort
 #include <vector>       // std::vector
 #include <functional>   // std::bind
+#include <map>
+#include <vector>
 
 class DecisionTree;
 class  BeliefState;
@@ -71,7 +73,11 @@ public:
     bool IsOccupying;
     bool mpIntransit;
     bool ResetCallOccupy;
-    Vector mpTarget = Vector(0,0); 
+    std::map<Vector, int> holemap;
+    std::map<int, Vector> playermap;
+    std::vector<Vector> holevector;
+    std::vector<int> playervector;
+    Vector mpTarget = Vector(0,0);
 
     Player();
     virtual ~Player();
@@ -101,8 +107,8 @@ public:
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     		if( AreSamePoints(player_pos, frontup, buffer)||
     		    AreSamePoints(player_pos, frontdown, buffer)||
-                //AreSamePoints(player_pos, backup, buffer)||
-                //AreSamePoints(player_pos, backdown, buffer)||
+                AreSamePoints(player_pos, backup, buffer)||
+                AreSamePoints(player_pos, backdown, buffer)||
                 AreSamePoints(player_pos, fronthor, buffer)
                 //||
                 //AreSamePoints(player_pos, backhor, buffer)||
@@ -138,7 +144,7 @@ public:
         //result = sstm.str();
         //mpAgent->Say(result);
         
-        for(Unum i=i=4; i<=11; i++){
+        for(Unum i=4; i<=11; i++){
             Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
             if(AreSamePoints(player_pos, frontup, buffer)){
                 std::string msgstr = "cus";
@@ -261,15 +267,23 @@ public:
         return false;
     }
 
-    bool IsOccupied(Vector target){
+    bool IsOccupied(Vector target, double buffer){
     	//Returns true if target is occupied by a player
-    	double buffer = 0.3;
     	for(Unum i=4; i<=11; i++){
     		Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
     		if(AreSamePoints(player_pos, target, buffer)&&i!=mpAgent->GetSelfUnum())
     			return true;
     	}
     	return false;
+    }
+
+    Unum GetOccupierUnum(Vector target, double buffer){
+        for(Unum i=4; i<=11; i++){
+            Vector player_pos = mpAgent->GetWorldState().GetTeammate(i).GetPos();
+            if(AreSamePoints(player_pos, target, buffer))
+                return i;
+        }
+        return -1;
     }
 
     Unum GetClosest(Vector target){
@@ -438,7 +452,6 @@ public:
         return mindisUnum;
     }
 
-
     Unum GetClosestTeammateTo(Vector target){
         double mindis = 99999;
         Unum mindisUnum = -1;
@@ -448,6 +461,22 @@ public:
             if(dis<mindis){
                 mindisUnum = i;
                 mindis=dis;
+            }
+        }
+        return mindisUnum;
+    }
+
+    Unum GetClosestFromArray(Vector target){
+        double mindis = 99999;
+        Unum mindisUnum = -1;
+        for(int i=0; i<playervector.size(); i++){
+            if(playervector[i]!=-1){
+                Vector player_pos = mpAgent->GetWorldState().GetTeammate(playervector[i]).GetPos();
+                double dis = player_pos.Dist(target);
+                if(dis<mindis){
+                    mindisUnum = playervector[i];
+                    mindis=dis;
+                }
             }
         }
         return mindisUnum;
@@ -506,6 +535,92 @@ public:
         Vector BHupvert = Vector(BHPos.X(), BHPos.Y()-20);
         Vector BHdownvert = Vector(BHPos.X(), BHPos.Y()+20);
 
+        ////////////////////////////////////////////////////////////
+        holevector.clear();
+        playervector.clear();
+        holemap.clear();
+        playermap.clear();
+
+        holevector.push_back(BHfrontup);
+        holevector.push_back(BHfronthor);
+        holevector.push_back(BHfrontdown);
+        holevector.push_back(BHupvert);
+        holevector.push_back(BHdownvert);
+        holevector.push_back(BHbackup);
+        holevector.push_back(BHbackdown);
+        holevector.push_back(BHbackhor);
+
+        //holevector[0] = Vector(100,100);
+        //holevector[1] = Vector(100,100);
+        //holevector[2] = Vector(100,100);
+        holevector[3] = Vector(100,100);
+        holevector[4] = Vector(100,100);
+        //holevector[5] = Vector(100,100);
+        //holevector[6] = Vector(100,100);
+        holevector[7] = Vector(100,100);
+            
+        for(Unum i=4; i<=11; i++)
+            playervector.push_back(i);
+
+        Vector mypos = mpAgent->GetSelf().GetPos();
+        double buffer = 1;
+        Vector test;
+        for(int i=0; i<holevector.size(); i++){
+            if(holevector[i]!=Vector(100,100)){
+                test = holevector[i];
+                Unum X = GetOccupierUnum(test, buffer); //X will be the smaller unum if two players occupy a hole
+                if(X==mpAgent->GetSelfUnum() && test.X()>=-50 && test.X()<=50 && test.Y()>=-25 && test.Y()<=25){
+                    OccupyHole(test);
+                    return;
+                }
+            }
+        }
+
+        for(int i=0; i<holevector.size(); i++){
+            if(holevector[i]!=Vector(100,100)){
+                Unum occupier = GetOccupierUnum(holevector[i], buffer);
+                if(occupier!=-1){
+                    playermap[occupier] = holevector[i];
+                    holemap[holevector[i]] = occupier; 
+                }
+            }
+        }
+
+        std::map<Vector,int>::iterator holeit;
+        std::map<int,Vector>::iterator playit;
+        
+        for(int i=0; i<holevector.size(); i++){
+            if(holevector[i]!=Vector(100,100)){
+                holeit = holemap.find(holevector[i]);
+                if(holeit!=holemap.end()){
+                    std::cout<<"Found hole in map"<<std::endl;
+                    holevector[i] = Vector(100, 100);
+                }
+            }
+        }
+
+        for(int i=0; i<playervector.size(); i++){
+            if(playervector[i]!=-1){
+                playit = playermap.find(playervector[i]);
+                if(playit!=playermap.end()){
+                    std::cout<<"Found player in map"<<std::endl;
+                    playervector[i] = -1;
+                }
+            }
+        }
+
+        for(int i=0; i<holevector.size(); i++){
+            if(holevector[i]!=Vector(100,100)){
+                Unum X = GetClosestFromArray(holevector[i]);
+                if(X==mpAgent->GetSelfUnum() && holevector[i].X()>=-50 && holevector[i].X()<=50 && holevector[i].Y()>=-25 && holevector[i].Y()<=25){
+                    OccupyHole(holevector[i]);
+                    return;
+                }
+            }
+        }
+        //////////////////////////////////////////////////////////////////
+
+        /*
         Unum FU, FD, BU, BD;
         Unum FH, BH, UV, DV;
 
@@ -513,55 +628,69 @@ public:
 
         FU = GetClosest(BHfrontup);
         std::cout<<"For player "<<mpAgent->GetSelfUnum()<<", FU = "<<FU<<std::endl;
-        if(FU==mpAgent->GetSelfUnum()&&BHfrontup.X()>=-45&&BHfrontup.X()<=45&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25){
+        if(FU==mpAgent->GetSelfUnum())
+            std::cout<<"might be eligible - FU - "<<BHfrontup<<std::endl;
+        if(FU==mpAgent->GetSelfUnum()&&BHfrontup.X()>=-50&&BHfrontup.X()<=50&&BHfrontup.Y()>=-25&&BHfrontup.Y()<=25){
             OccupyHole(BHfrontup);
             std::cout<<"Player "<<FU<<" occupying frontup"<<std::endl;
             return;
         }
 
         FD = GetClosestExcl1(BHfrontdown, FU);
+        if(FD==mpAgent->GetSelfUnum())
+            std::cout<<"might be eligible - FD - "<<BHfrontdown<<std::endl;
         std::cout<<"For player "<<mpAgent->GetSelfUnum()<<", FD = "<<FD<<std::endl;
-        if(FD==mpAgent->GetSelfUnum()&&BHfrontdown.X()>=-45&&BHfrontdown.X()<=45&&BHfrontdown.Y()>=-25&&BHfrontdown.Y()<=25){
+        if(FD==mpAgent->GetSelfUnum()&&BHfrontdown.X()>=-50&&BHfrontdown.X()<=50&&BHfrontdown.Y()>=-25&&BHfrontdown.Y()<=25){
             OccupyHole(BHfrontdown);
             std::cout<<"Player "<<FD<<" occupying frontdown"<<std::endl;
             return;
         }
 
         FH = GetClosestExcl2(BHfronthor, FU, FD);
+        if(FH==mpAgent->GetSelfUnum())
+            std::cout<<"might be eligible - FH - "<<BHfronthor<<std::endl;
         std::cout<<"For player "<<mpAgent->GetSelfUnum()<<", FH = "<<FH<<std::endl;
-        if(FH==mpAgent->GetSelfUnum()&&BHfronthor.X()>=-45&&BHfronthor.X()<=45&&BHfronthor.Y()>=-25&&BHfronthor.Y()<=25){
+        if(FH==mpAgent->GetSelfUnum()&&BHfronthor.X()>=-50&&BHfronthor.X()<=50&&BHfronthor.Y()>=-25&&BHfronthor.Y()<=25){
             OccupyHole(BHfronthor);
             std::cout<<"Player "<<FH<<" occupying fronthor"<<std::endl;
             return;
         }
 
         UV = GetClosestExcl3(BHupvert, FU, FD, FH);
+        if(UV==mpAgent->GetSelfUnum())
+            std::cout<<"might be eligible - UV - "<<BHupvert<<std::endl;
         std::cout<<"For player "<<mpAgent->GetSelfUnum()<<", UV = "<<UV<<std::endl;
-        if(UV==mpAgent->GetSelfUnum()&&BHupvert.X()>=-45&&BHupvert.X()<=45&&BHupvert.Y()>=-25&&BHupvert.Y()<=25){
+        if(UV==mpAgent->GetSelfUnum()&&BHupvert.X()>=-50&&BHupvert.X()<=50&&BHupvert.Y()>=-25&&BHupvert.Y()<=25){
             OccupyHole(BHupvert);
             std::cout<<"Player "<<UV<<" occupying upvert"<<std::endl;
             return;
         }
 
         DV = GetClosestExcl4(BHdownvert, FU, FD, FH, UV);
+        if(DV==mpAgent->GetSelfUnum())
+            std::cout<<"might be eligible - DV - "<<BHdownvert<<std::endl;
         std::cout<<"For player "<<mpAgent->GetSelfUnum()<<", DV = "<<DV<<std::endl;
-        if(DV==mpAgent->GetSelfUnum()&&BHdownvert.X()>=-45&&BHdownvert.X()<=45&&BHdownvert.Y()>=-25&&BHdownvert.Y()<=25){
+        if(DV==mpAgent->GetSelfUnum()&&BHdownvert.X()>=-50&&BHdownvert.X()<=50&&BHdownvert.Y()>=-25&&BHdownvert.Y()<=25){
             OccupyHole(BHdownvert);
             std::cout<<"Player "<<DV<<" occupying downvert"<<std::endl;
             return;
         }
 
         BU = GetClosestExcl5(BHbackup, FU, FD, FH, UV, DV);
+        if(BU==mpAgent->GetSelfUnum())
+            std::cout<<"might be eligible - BU - "<<BHbackup<<std::endl;
         std::cout<<"For player "<<mpAgent->GetSelfUnum()<<", BU = "<<BU<<std::endl;
-        if(BU==mpAgent->GetSelfUnum()&&BHbackup.X()>=-45&&BHbackup.X()<=45&&BHbackup.Y()>=-25&&BHbackup.Y()<=25){
+        if(BU==mpAgent->GetSelfUnum()&&BHbackup.X()>=-50&&BHbackup.X()<=50&&BHbackup.Y()>=-25&&BHbackup.Y()<=25){
             OccupyHole(BHbackup);
             std::cout<<"Player "<<BU<<" occupying backup"<<std::endl;
             return;
         }
         
         BD = GetClosestExcl6(BHbackdown, FU, FD, FH, UV, DV, BU);
+        if(BD==mpAgent->GetSelfUnum())
+            std::cout<<"might be eligible - BD - "<<BHbackdown<<std::endl;
         std::cout<<"For player "<<mpAgent->GetSelfUnum()<<", BD = "<<BD<<std::endl;
-        if(BD==mpAgent->GetSelfUnum()&&BHbackdown.X()>=-45&&BHbackdown.X()<=45&&BHbackdown.Y()>=-25&&BHbackdown.Y()<=25){
+        if(BD==mpAgent->GetSelfUnum()&&BHbackdown.X()>=-50&&BHbackdown.X()<=50&&BHbackdown.Y()>=-25&&BHbackdown.Y()<=25){
             OccupyHole(BHbackdown);
             std::cout<<"Player "<<BD<<" occupying backdown"<<std::endl;
             return;
@@ -569,12 +698,15 @@ public:
 
         //BH = GetClosestExcl7(BHbackhor, FU, FD, FH, UV, DV, BU, BD);
         BH = mpAgent->GetSelfUnum();
+        if(BH==mpAgent->GetSelfUnum())
+            std::cout<<"might be eligible - BH - "<<BHbackhor<<std::endl;
         std::cout<<"For player "<<mpAgent->GetSelfUnum()<<", BH = "<<BH<<std::endl;
-        if(BH==mpAgent->GetSelfUnum()&&BHbackhor.X()>=-45&&BHbackhor.X()<=45&&BHbackhor.Y()>=-25&&BHbackhor.Y()<=25){
+        if(BH==mpAgent->GetSelfUnum()&&BHbackhor.X()>=-50&&BHbackhor.X()<=50&&BHbackhor.Y()>=-25&&BHbackhor.Y()<=25){
             OccupyHole(BHbackhor);
             std::cout<<"Player "<<BH<<" occupying backhor"<<std::endl;
             return;
         }
+        */
         
         /*
         std::vector<Vector> holes;

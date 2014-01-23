@@ -278,7 +278,7 @@ void Player::Run()
                     //std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - ball kickable"<<std::endl;
                     Vector nearestHole = RoundToNearestHole(myPosition);
                     if(PassPlayersAvailable()){
-                        std::cout <<"------------------------------------------------------"<<std::endl;
+                        std::cout <<"-------------------------------------------------------"<<std::endl;
                         //std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - pass players available"<<std::endl;
                         if(PassToBestPlayer())
                             mpAgent->SetFollowBall(false);
@@ -319,8 +319,7 @@ void Player::Run()
                 mpAgent->SetResetVal(false);
                 //mpAgent->GetTargetUnum();
                 //std::cout<<"Player - "<<mpAgent->GetSelfUnum()<<" resetting holes to unum "<<mpAgent->GetTargetUnum()<<std::endl;
-                ResetCallOccupy = true;
-                //DecideAndOccupyHole(mpAgent->GetTargetUnum());
+                DecideAndOccupyHole(mpAgent->GetTargetUnum());
                 return;
             }
             
@@ -340,7 +339,7 @@ void Player::Run()
             //std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - ball kickable"<<std::endl;
             Vector nearestHole = RoundToNearestHole(myPosition);
             if(PassPlayersAvailable()){
-                std::cout <<"--------------------------------------------------------"<<std::endl;
+                std::cout <<"----------------------------------------------------------"<<std::endl;
                 //std::cout<<"player "<< mpAgent->GetSelfUnum()<<" - pass players available"<<std::endl;
                 if(PassToBestPlayer())
                   mpAgent->SetFollowBall(false);
@@ -367,14 +366,14 @@ void Player::Run()
                 //else, do nothing
             //else, do nothing
             if(BallKickableByATeammate()){
-                ResetCallOccupy = false;
                 //std::cout<<"ball kickable by teammate - will decide and occupy hole - "<<mpAgent->GetSelfUnum()<<std::endl;
                 DecideAndOccupyHole(-1);
                 //if(!IsOccupying)
                     //DecideAndOccupyHole(-2);
             }
-            else{
-                //DecideAndOccupyHole(-2);
+            Unum X = GetOccupierUnum(myPosition, 1);
+            if(X!=mpAgent->GetSelfUnum()){
+                DecideAndOccupyHole(mpAgent->GetSelfUnum());
             }
             if((!IsOccupying)&&ballpos.Dist(myPosition)>30)
                     Dasher::instance().GetBall(*mpAgent, -1, false, false);
